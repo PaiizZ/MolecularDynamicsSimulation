@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class GameController : MonoBehaviour {
 
-	public ArgonScripts argonPerfab;
-	public List<ArgonScripts> argons = new List<ArgonScripts> ();
+	public ArgonScript argonPerfab;
+	public List<ArgonScript> argons = new List<ArgonScript> ();
 	// private number of argon molecular
 	private int numberArgon = 10 ;
 	// Use this for initialization
@@ -13,10 +13,11 @@ public class GameController : MonoBehaviour {
 		for(int i = 0 ; i < numberArgon ; i++){
 			argons.Add (Instantiate(argonPerfab,new Vector3(Random.Range(-9.0f, 9.0f),Random.Range(-9.0f, 9.0f),Random.Range(-9.0f, 9.0f)),Quaternion.identity));
 		}
-//		foreach (ArgonScripts argon in argons)
-//		{
-//			argon.GetComponent<Rigidbody>().velocity = new Vector3( Random.Range(-5.0f, 5.0f), Random.Range(-5.0f, 5.0f), Random.Range(-5.0f, 5.0f) );
-//		}
+		foreach (ArgonScript argon in argons) {
+			argon.GetComponent<Rigidbody> ().velocity = new Vector3 (Random.Range (-20.0f, 20.0f),
+				Random.Range (-20.0f, 20.0f),
+				Random.Range (-20.0f, 20.0f));
+		}
 	}
 
 	// Update is called once per frame
