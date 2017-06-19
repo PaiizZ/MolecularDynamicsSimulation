@@ -34,7 +34,6 @@ public class ArgonScript : MonoBehaviour {
 //			Random.Range(-velocity, velocity),
 //			Random.Range(-velocity, velocity),
 //			Random.Range(-velocity, velocity));
-//		rb.velocity = new Vector3(
 //		
 	}
 
@@ -64,6 +63,7 @@ public class ArgonScript : MonoBehaviour {
 		
 			forceVector = getForce (otherArgon);
 			Debug.Log ("x:"+forceVector.x+" y:"+forceVector.y+" z:"+forceVector.x);
+            rb.AddForce(forceVector.x, forceVector.y, forceVector.z);
 		}
 	}
 
