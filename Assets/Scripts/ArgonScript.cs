@@ -30,10 +30,11 @@ public class ArgonScript : MonoBehaviour {
 		Debug.Log ("velocity: " + velocity);
 		momentum = massArgon * velocity;
 		Debug.Log ("momentum: " + momentum);
-//		rb.velocity = new Vector3(
-//			Random.Range(-velocity, velocity),
-//			Random.Range(-velocity, velocity),
-//			Random.Range(-velocity, velocity));
+		velocity = velocity / 10;
+		rb.velocity = new Vector3(
+			Random.Range(-velocity, velocity),
+			Random.Range(-velocity, velocity),
+			Random.Range(-velocity, velocity));
 //		rb.velocity = new Vector3(
 //		
 	}

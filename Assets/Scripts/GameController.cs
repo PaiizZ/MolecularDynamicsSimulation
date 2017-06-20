@@ -13,11 +13,11 @@ public class GameController : MonoBehaviour {
 		for(int i = 0 ; i < numberArgon ; i++){
 			argons.Add (Instantiate(argonPerfab,new Vector3(Random.Range(-9.0f, 9.0f),Random.Range(-9.0f, 9.0f),Random.Range(-9.0f, 9.0f)),Quaternion.identity));
 		}
-		foreach (ArgonScript argon in argons) {
-			argon.GetComponent<Rigidbody> ().velocity = new Vector3 (Random.Range (-20.0f, 20.0f),
-				Random.Range (-20.0f, 20.0f),
-				Random.Range (-20.0f, 20.0f));
-		}
+//		foreach (ArgonScript argon in argons) {
+//			argon.GetComponent<Rigidbody> ().velocity = new Vector3 (Random.Range (-20.0f, 20.0f),
+//				Random.Range (-20.0f, 20.0f),
+//				Random.Range (-20.0f, 20.0f));
+//		}
 	}
 
 	// Update is called once per frame
