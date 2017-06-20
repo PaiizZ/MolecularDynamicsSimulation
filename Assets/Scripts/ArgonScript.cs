@@ -14,6 +14,9 @@ public class ArgonScript : MonoBehaviour {
 	private float unitVector;
 	private float velocity;
 	private float momentum;
+    private float momentumX;
+    private float momentumY;
+    private float momentumZ;
 	private Vector3 forceVector;
 	GameObject otherObject = null;
 	// Use this for initialization
@@ -27,20 +30,24 @@ public class ArgonScript : MonoBehaviour {
 		unitVector = 1.0f / (Mathf.Sqrt (Mathf.Pow (alpha, 2) + Mathf.Pow (beta, 2) + Mathf.Pow (gamma, 2))) * scaleVector;
 //		Debug.Log ("unitVector: " + unitVector);
 		velocity = Mathf.Sqrt ( 3 * R * T / massArgon ) * unitVector ;
-		Debug.Log ("velocity: " + velocity);
+//		Debug.Log ("velocity: " + velocity);
 		momentum = massArgon * velocity;
-		Debug.Log ("momentum: " + momentum);
-//		rb.velocity = new Vector3(
-//			Random.Range(-velocity, velocity),
-//			Random.Range(-velocity, velocity),
-//			Random.Range(-velocity, velocity));
+       
+        //		Debug.Log ("momentum: " + momentum);
+        momentumX = Random.Range(-momentum, momentum);
+        momentumY = Random.Range(-Mathf.Abs(momentum - momentumX), momentum - momentumX);
+        momentumZ = momentum - Mathf.Abs(momentumX)- Mathf.Abs(momentumY);
+      
+        Debug.Log(""+ Mathf.Sqrt(Mathf.Pow(momentumX, 2) + Mathf.Pow(momentumY, 2) + Mathf.Pow(momentumZ, 2)));
+
+        rb.velocity = new Vector3(	Random.Range(-momentum, momentum),	Random.Range(-momentum, momentum),	Random.Range(-momentum, momentum));
 //		
 	}
 
 	public Vector3 getForce(ArgonScript obj){
-		float wellDepth = 342.0f;
-		float diameter = 128.0f;
-		float scalePosition = Mathf.Sqrt ( Mathf.Pow((obj.transform.position.x - this.transform.position.x),2) + 
+		float wellDepth = 342.0f; //constant well depth of argon
+		float diameter = 128.0f;  //constant diameter of argon
+        float scalePosition = Mathf.Sqrt ( Mathf.Pow((obj.transform.position.x - this.transform.position.x),2) + 
 										   Mathf.Pow((obj.transform.position.y - this.transform.position.y),2) + 
 										   Mathf.Pow((obj.transform.position.z - this.transform.position.z),2) );
 //		Debug.Log ("scalePosition : " + scalePosition);
