@@ -12,7 +12,8 @@ public class ArgonScript : MonoBehaviour {
 	private float gamma;
 	private float calculateValue;
 	private float scalar;
-	private float unitVector;
+	private Vector3 unitVector;
+	private Vector3 randomVector;
 	private Vector3 velocityVector;
 	private Vector3 momentumVector;
 	private Vector3 forceVector;
@@ -33,20 +34,22 @@ public class ArgonScript : MonoBehaviour {
 		beta = Random.Range (-10.0f, 10.0f);
 		gamma = Random.Range (-10.0f, 10.0f);
 
+		randomVector = new Vector3 (alpha,beta,gamma);
+
 		calculateValue = Mathf.Pow (alpha, 2) + Mathf.Pow (beta, 2) + Mathf.Pow (gamma, 2);
 //		Debug.Log ("calculateValue: " + calculateValue);
 
 		scalar = Mathf.Sqrt (calculateValue);
 //		Debug.Log ("scaleVector: " + scalar);
 
-		unitVector = 1.0f / (scalar) * scalar;
+		unitVector = ( 1 / scalar) * randomVector;
 //		Debug.Log ("unitVector: " + unitVector);
 
-		velocityVector = new Vector3(alpha * Mathf.Sqrt ((3 * R * T) / (massArgon*calculateValue)) , beta * Mathf.Sqrt ((3 * R * T) / (massArgon*calculateValue)), gamma * Mathf.Sqrt ((3 * R * T) / (massArgon*calculateValue)));
+		velocityVector = Mathf.Sqrt ((3 * R * T) / (massArgon*calculateValue)) * randomVector;
 //		Debug.Log ("velocity x:" + velocityVector.x +" y:" + velocityVector.y + " z:"+velocityVector.z);
 
 		momentumVector = massArgon * velocityVector;
-//		Debug.Log ("momentum x:" + momentumVector.x +" y:" + momentumVector.y + " z:"+momentumVector.z);
+		Debug.Log ("momentum x:" + momentumVector.x +" y:" + momentumVector.y + " z:"+momentumVector.z);
 
 //		rb.velocity = momentum ;
 //		for(int i = 0 ; i < gameController.getNumberArgon() ; i++){
@@ -90,20 +93,20 @@ public class ArgonScript : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		
-		for(int i = 0 ; i < gameController.getNumberArgon() ; i++){
-			if(this.transform.position.x != gameController.transform.GetChild (i).position.x){
-			listMomentum.Add (momentumVector + 0.5f * Time.deltaTime * forceVector);
-//			momentumVector = momentumVector + 0.5f * Time.deltaTime * forceVector;
-			positionVector = new Vector3 (gameController.transform.GetChild (i).position.x, gameController.transform.GetChild (i).position.y, gameController.transform.GetChild (i).position.z) + (Time.deltaTime*momentumVector/massArgon);
-			Debug.Log ("positionVector x:"+positionVector.x + " y:"+positionVector.y+" z:"+positionVector.z);
-			forceVector = calculationcForce (positionVector);
-			listMomentum.Add (listMomentum[i] + 0.5f * Time.deltaTime * forceVector);
-			listMomentum.RemoveAt (i);
-			}
-		}
-		foreach(Vector3 momentum in listMomentum){
-			momentumVector += momentum ;
-		}
+//		for(int i = 0 ; i < gameController.getNumberArgon() ; i++){
+//			if(this.transform.position.x != gameController.transform.GetChild (i).position.x){
+//			listMomentum.Add (momentumVector + 0.5f * Time.deltaTime * forceVector);
+////			momentumVector = momentumVector + 0.5f * Time.deltaTime * forceVector;
+//			positionVector = new Vector3 (gameController.transform.GetChild (i).position.x, gameController.transform.GetChild (i).position.y, gameController.transform.GetChild (i).position.z) + (Time.deltaTime*momentumVector/massArgon);
+//			Debug.Log ("positionVector x:"+positionVector.x + " y:"+positionVector.y+" z:"+positionVector.z);
+//			forceVector = calculationcForce (positionVector);
+//			listMomentum.Add (listMomentum[i] + 0.5f * Time.deltaTime * forceVector);
+//			listMomentum.RemoveAt (i);
+//			}
+//		}
+//		foreach(Vector3 momentum in listMomentum){
+//			momentumVector += momentum ;
+//		}
 //		rb.velocity = momentumVector;
 //		Debug.Log ("momentum x:" + momentumVector.x +" y:" + momentumVector.y + " z:"+momentumVector.z);
 	}
