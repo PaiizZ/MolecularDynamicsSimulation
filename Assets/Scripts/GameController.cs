@@ -19,9 +19,9 @@ public class GameController : MonoBehaviour {
 			argon.transform.SetParent (this.transform);
 		}
 
-		for(int i = 0 ; i < numberArgon ; i++){
-			Debug.Log ("x:" + this.transform.GetChild(i).position.x+" y:" +  this.transform.GetChild(i).position.y+" z:" +  this.transform.GetChild(i).position.z);
-		}
+//		for(int i = 0 ; i < numberArgon ; i++){
+//			Debug.Log ("x:" + this.transform.GetChild(i).position.x+" y:" +  this.transform.GetChild(i).position.y+" z:" +  this.transform.GetChild(i).position.z);
+//		}
 	}
 
 	// Update is called once per frame
