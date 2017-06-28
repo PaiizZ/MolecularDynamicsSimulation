@@ -7,12 +7,12 @@ public class GameController : MonoBehaviour {
 	public ArgonScript argonPerfab;
 	public List<ArgonScript> argons = new List<ArgonScript> ();
 	// private number of argon molecular
-	private int numberArgon = 3 ;
+	private int numberArgon = 10 ;
 
 	// Use this for initialization
 	void Start () {
 		for(int i = 0 ; i < numberArgon ; i++){
-			argons.Add (Instantiate(argonPerfab,new Vector3(Random.Range(-9.0f, 9.0f),Random.Range(-9.0f, 9.0f),Random.Range(-9.0f, 9.0f)),Quaternion.identity));
+			argons.Add (Instantiate(argonPerfab,new Vector3(Random.Range(-4.0f, 4.0f),Random.Range(-4.0f, 4.0f),Random.Range(-4.0f, 4.0f)),Quaternion.identity));
 		}
 
 		foreach (ArgonScript argon in argons) {
