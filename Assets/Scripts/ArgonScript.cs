@@ -4,9 +4,10 @@ using UnityEngine;
 
 public class ArgonScript : MonoBehaviour {
 	private Rigidbody rb;
-	private float R = 8.31447f ; //molar gas constant ( J/(mol*Kg) )
+	private float R = 8.31447f ; //molar gas constant ( J/(mol*K) )
 	private float T = 298f ; // temperature in kelvins (25+273)
-	private float massArgon = 39.948f * Mathf.Pow(10,-3) ; // ( Kg/mol )
+	private float massArgon = 39.948f/ (6 * Mathf.Pow(10,23)) ; // ( g / molecule )
+//	private float massArgon = 39.948f ; // ( g / molecule )
 	private float alpha;
 	private float beta;
 	private float gamma;
@@ -26,7 +27,7 @@ public class ArgonScript : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-		
+		Debug.Log ("massArgon: " + massArgon);
 		GameObject go = GameObject.Find("GameController");
 		gameController = (GameController) go.GetComponent(typeof(GameController));
 
@@ -39,21 +40,21 @@ public class ArgonScript : MonoBehaviour {
 		randomVector = new Vector3 (alpha,beta,gamma);
 
 		calculateValue = Mathf.Pow (alpha, 2) + Mathf.Pow (beta, 2) + Mathf.Pow (gamma, 2);
-//		Debug.Log ("calculateValue: " + calculateValue);
+		Debug.Log ("calculateValue: " + calculateValue);
 
 		scalar = Mathf.Sqrt (calculateValue);
-//		Debug.Log ("scaleVector: " + scalar);
+		Debug.Log ("scaleVector: " + scalar);
 
 		unitVector = ( 1 / scalar) * randomVector;
 //		Debug.Log ("unitVector: " + unitVector);
 
 		velocityVector = Mathf.Sqrt ((3 * R * T) / (massArgon*calculateValue)) * randomVector;
-//		Debug.Log ("velocity x:" + velocityVector.x +" y:" + velocityVector.y + " z:"+velocityVector.z);
+		Debug.Log ("velocity x:" + velocityVector.x +" y:" + velocityVector.y + " z:"+velocityVector.z);
 
 		momentumVector = massArgon * velocityVector;
-        //		Debug.Log ("momentum x:" + momentumVector.x +" y:" + momentumVector.y + " z:"+momentumVector.z);
+   		Debug.Log ("momentum x:" + momentumVector.x +" y:" + momentumVector.y + " z:"+momentumVector.z);
 
-		rb.velocity = momentumVector;
+	//	rb.velocity = momentumVector;
         //		for(int i = 0 ; i < gameController.getNumberArgon() ; i++){
         //			if(this.transform.position.x != gameController.gameObject.transform.GetChild(i).position.x){
         //			Debug.Log ("x:" + gameController.gameObject.transform.GetChild(i).position.x+" y:" +  gameController.gameObject.transform.GetChild(i).position.y+" z:" +  gameController.gameObject.transform.GetChild(i).position.z);
@@ -62,12 +63,12 @@ public class ArgonScript : MonoBehaviour {
     }
 
     public Vector3 calculationcForce(Vector3 obj){
-		float wellDepth = 1.65f * Mathf.Pow(10,-21); //constant well depth of argon
-		float diameter = 3.4f * Mathf.Pow(10, -10);  //constant diameter of argon
+		float wellDepth = 128f / (6 * Mathf.Pow(10,20)); //constant well depth of argon
+		float diameter = 342f * Mathf.Pow(10, -12);  //constant diameter of argon (sigma)
  //       float wellDepth = 0.65f ; //constant well depth of argon
  //       float diameter = 0.4f;  //constant diameter of argon
- //       Debug.Log("wellDepth " + wellDepth);
- //       Debug.Log("diameter " + diameter);
+        Debug.Log("wellDepth " + wellDepth);
+        Debug.Log("diameter " + diameter);
         //Debug.Log("scalePosition x :" + this.transform.position.x +"," +obj.x + " y :" + this.transform.position.y + "," + obj.y + " z :" + this.transform.position.z + "," + obj.z);
         float scalePosition = Mathf.Sqrt ( Mathf.Pow((this.transform.position.x - obj.x),2) + 
 										   Mathf.Pow((this.transform.position.y - obj.y),2) + 
@@ -75,9 +76,9 @@ public class ArgonScript : MonoBehaviour {
 		Debug.Log ("scalePosition : " + scalePosition);
 		float A = 4 * wellDepth * Mathf.Pow(diameter, 12);
         Debug.Log("A " + A);
-        float B = 4 * wellDepth * Mathf.Pow(diameter, 6);
+		float B = 4 * wellDepth * Mathf.Pow(diameter, 6);
         Debug.Log("B " + B);
-        float energy = 12 * A * Mathf.Pow (scalePosition, -14) - 6 * B * Mathf.Pow (scalePosition, -8);
+		float energy = 12 * 4 * wellDepth * Mathf.Pow(diameter, 12) * Mathf.Pow (scalePosition, -14) - 6 * 4 * wellDepth * Mathf.Pow(diameter, 6) * Mathf.Pow (scalePosition, -8);
 		Debug.Log ("energy "+energy);
 		float forceX = energy*(this.transform.position.x - obj.x);
 		float forceY = energy*(this.transform.position.y - obj.y);
@@ -88,7 +89,6 @@ public class ArgonScript : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-		
 		for(int i = 0 ; i < gameController.getNumberArgon() ; i++){
 			if(this.transform.position.x != gameController.transform.GetChild (i).position.x){
      			temp = momentumVector + 0.5f * Time.deltaTime * forceVector;
@@ -107,7 +107,7 @@ public class ArgonScript : MonoBehaviour {
     		momentumVector += momentum ;
 		}
         listMomentum.Clear();
-//        rb.velocity = momentumVector;
+        rb.velocity = momentumVector;
         Debug.Log ("momentum x:" + momentumVector.x +" y:" + momentumVector.y + " z:"+momentumVector.z);
 	}
 
