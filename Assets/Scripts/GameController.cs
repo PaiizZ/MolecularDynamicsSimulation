@@ -12,7 +12,7 @@ public class GameController : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		for(int i = 0 ; i < numberArgon ; i++){
-			argons.Add (Instantiate(argonPerfab,new Vector3(Random.Range(-4.0f, 4.0f),Random.Range(-4.0f, 4.0f),Random.Range(-4.0f, 4.0f)),Quaternion.identity));
+			argons.Add (Instantiate(argonPerfab,new Vector3(Random.Range(-4.8f, 4.8f),Random.Range(-4.8f, 4.8f),Random.Range(-4.8f, 4.8f)),Quaternion.identity));
 		}
 
 		foreach (ArgonScript argon in argons) {
