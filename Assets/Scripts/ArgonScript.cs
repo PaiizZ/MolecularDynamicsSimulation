@@ -6,7 +6,7 @@ public class ArgonScript : MonoBehaviour {
     private Rigidbody rb;
     private float R = 8.31447f * Mathf.Pow(10, -3); //molar gas constant ( KJ/mol )
     private float T = 298f; // temperature in kelvins (25+273)
-                            //private float massArgon = 39.948f/ (6 * Mathf.Pow(10,23)) ; // ( g / molecule )
+    //private float massArgon = 39.948f/ (6 * Mathf.Pow(10,23)) ; // ( g / molecule )
     private float massArgon = 39.948f * Mathf.Pow(10, -3); // ( Kg / molecule )
     private float alpha;
     private float beta;
@@ -14,6 +14,7 @@ public class ArgonScript : MonoBehaviour {
     private float calculateValue;
     private float scalar;
     private float velocity;
+    private float maxDistance =2f;
     private Vector3 unitVector;
     private Vector3 randomVector;
     private Vector3 velocityVector;
@@ -54,7 +55,7 @@ public class ArgonScript : MonoBehaviour {
         momentumVector = massArgon * velocityVector;
         //	Debug.Log ("momentum x:" + momentumVector.x +" y:" + momentumVector.y + " z:"+momentumVector.z);
 
-        //	rb.velocity = momentumVector;
+        rb.velocity = momentumVector;
         //for(int i = 0 ; i < gameController.getNumberArgon() ; i++){
         //			if(this.transform.position.x != gameController.gameObject.transform.GetChild(i).position.x){
 
@@ -67,8 +68,8 @@ public class ArgonScript : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
-        float time = Time.deltaTime * Mathf.Pow(10, -12);
-        momentumVector = momentumVector + (0.5f * time * forceVector);
+       float time = Time.deltaTime * Mathf.Pow(10, -12);
+        //momentumVector = momentumVector + (0.5f * time * forceVector);
 
         for (int i = 0; i < gameController.getNumberArgon(); i++) {
             periodicBoundary();
@@ -76,38 +77,43 @@ public class ArgonScript : MonoBehaviour {
                 this.transform.position.y != gameController.transform.GetChild(i).position.y &&
                 this.transform.position.z != gameController.transform.GetChild(i).position.z) {
 
-                positionVector = new Vector3(gameController.transform.GetChild(i).position.x, gameController.transform.GetChild(i).position.y, gameController.transform.GetChild(i).position.z);
+                //positionVector = new Vector3(gameController.transform.GetChild(i).position.x, gameController.transform.GetChild(i).position.y, gameController.transform.GetChild(i).position.z);
                 //positionVector = positionVector +( (1f *Time.deltaTime * Mathf.Pow(10, -12)) / massArgon);
                 //Debug.Log("x:" + positionVector.x + " y:" + positionVector.y + " z:" + positionVector.z);
 
-                forceTotal += calculationcForce(positionVector, time);
+                calculationcForce(gameController.transform.GetChild(i),time);
             }
         }
         //Debug.Log("forceTotal x:" + forceTotal.x + " y:" + forceTotal.y + " z:" + forceTotal.z);
-        forceVector += forceTotal;
+        //forceVector += forceTotal;
         //Debug.Log("forceVector x:" + forceVector.x + " y:" + forceVector.y + " z:" + forceVector.z);
-        forceTotal.Set(0f, 0f, 0f);
-        momentumVector = momentumVector + (0.5f * time * forceVector);
+        
+       // momentumVector = momentumVector + (0.5f * time * forceVector);
+       // forceVector.Set(0f, 0f, 0f);
         //Debug.Log("momentumVector x:" + momentumVector.x + " y:" + momentumVector.y + " z:" + momentumVector.z);
-        rb.velocity = momentumVector;
+       // rb.velocity = momentumVector;
         periodicBoundary();
         //forceVector.Set(0f, 0f, 0f);
 
 
     }
 
-    public Vector3 calculationcForce(Vector3 obj, float time)
+    public void calculationcForce(Transform obj,float time)
     {
         float wellDepth = 128f * Mathf.Pow(10, -3); //constant well depth of argon (KJ/mol)
         float diameter = 3.42f;  //constant diameter of argon (Angstrom)  
-                                 //    Debug.Log("wellDepth " + wellDepth);
-                                 //    Debug.Log("diameter " + diameter);
-                                 //    Debug.Log("scalePosition x :" + this.transform.position.x +", other :" +obj.x + " y :" + this.transform.position.y + ", other :" + obj.y + " z : other :" + this.transform.position.z + "," + obj.z);
-        float scalePosition = (Mathf.Sqrt(Mathf.Pow((this.transform.position.x - obj.x), 2) +
-                                           Mathf.Pow((this.transform.position.y - obj.y), 2) +
-                                           Mathf.Pow((this.transform.position.z - obj.z), 2)));
-        temp = new Vector3(scalePosition, scalePosition, scalePosition) + (time * momentumVector / massArgon);
-        float scalar = (Mathf.Sqrt(Mathf.Pow((temp.x), 2) + Mathf.Pow((temp.y), 2) + Mathf.Pow((temp.z), 2)));
+        Vector3 position = transform.position;
+        Vector3 tempPosition = obj.position;
+
+        //    Debug.Log("wellDepth " + wellDepth);
+        //    Debug.Log("diameter " + diameter);
+        //    Debug.Log("scalePosition x :" + this.transform.position.x +", other :" +obj.x + " y :" + this.transform.position.y + ", other :" + obj.y + " z : other :" + this.transform.position.z + "," + obj.z);
+        float distance = (Mathf.Sqrt(Mathf.Pow((tempPosition.x - position.x), 2) +
+                                           Mathf.Pow((tempPosition.y - position.y), 2) +
+                                           Mathf.Pow((tempPosition.z - position.z), 2)));
+        // Debug.Log("distance " + distance);
+         temp = new Vector3(distance, distance, distance) + (time * momentumVector / massArgon);
+        float scalarDistance = (Mathf.Sqrt(Mathf.Pow((temp.x), 2) + Mathf.Pow((temp.y), 2) + Mathf.Pow((temp.z), 2)));
 
         //Debug.Log ("scalePosition : " + scalePosition);
         //Debug.Log("scalar : " + scalar);
@@ -115,13 +121,22 @@ public class ArgonScript : MonoBehaviour {
         //    Debug.Log("A " + A);
         //	float B = 4 * wellDepth * Mathf.Pow(diameter, 6);
         //    Debug.Log("B " + B);
-        float energy = 12 * 4 * wellDepth * Mathf.Pow(diameter, 12) * Mathf.Pow(scalar, -14) - 6 * 4 * wellDepth * Mathf.Pow(diameter, 6) * Mathf.Pow(scalar, -8);
+        // if (distance > maxDistance){
+        //    float energy = 12 * 4 * wellDepth * Mathf.Pow(diameter, 12) * Mathf.Pow(distance, -14) - 6 * 4 * wellDepth * Mathf.Pow(diameter, 6) * Mathf.Pow(distance, -8);
+        //    rb.AddForce( energy * (tempPosition - position));
+        //}
+        if (distance <= maxDistance)
+        {
+            float energy = 12 * 4 * wellDepth * Mathf.Pow(diameter, 12) * Mathf.Pow(scalarDistance, -14) - 6 * 4 * wellDepth * Mathf.Pow(diameter, 6) * Mathf.Pow(scalarDistance, -8);
+            Debug.Log ("energy "+energy);
+            rb.AddForce( -(energy * (tempPosition - position)));
+        }
         //Debug.Log ("energy "+energy);
-        float forceX = energy * (this.transform.position.x - obj.x);
-        float forceY = energy * (this.transform.position.y - obj.y);
-        float forceZ = energy * (this.transform.position.z - obj.z);
+        //float forceX = energy * (this.transform.position.x - obj.position.x);
+        //float forceY = energy * (this.transform.position.y - obj.position.y);
+        //float forceZ = energy * (this.transform.position.z - obj.position.z);
         //Debug.Log ("Force x:"+forceX+" y:"+forceY+" z:"+forceZ);
-        return new Vector3(forceX, forceY, forceZ);
+
     }
 
     void periodicBoundary()
