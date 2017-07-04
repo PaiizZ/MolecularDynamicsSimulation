@@ -16,7 +16,7 @@ public class ArgonScript : MonoBehaviour {
     private float velocity;
     private float maxVelocity;
     private float sqrMaxVelocity;
-    private float maxDistance = 3f;
+    private float maxDistance = 5f;
     private Vector3 unitVector;
     private Vector3 randomVector;
     private Vector3 velocityVector;
@@ -103,11 +103,12 @@ public class ArgonScript : MonoBehaviour {
         periodicBoundary();
         if(rb.velocity.sqrMagnitude > this.sqrMaxVelocity)
         {
+            Debug.Log(" rb.velocity.velocity1 " + rb.velocity.x + " y " + rb.velocity.y + " z " + rb.velocity.z);
             Debug.Log(" rb.velocity.normalized " + rb.velocity.normalized);
             rb.velocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
             rb.velocity = massArgon * velocityVector;
-            Debug.Log(" rb.velocity.velocity " + rb.velocity.x + " y " + rb.velocity.y + " z " + rb.velocity.z);
+            Debug.Log(" rb.velocity.velocity2 " + rb.velocity.x + " y " + rb.velocity.y + " z " + rb.velocity.z);
         }
 
         //forceVector.Set(0f, 0f, 0f);

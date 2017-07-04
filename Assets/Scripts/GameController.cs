@@ -8,7 +8,7 @@ public class GameController : MonoBehaviour {
 	public List<ArgonScript> argons = new List<ArgonScript> ();
 	// private number of argon molecular
 
-	private int numberArgon = 150 ;
+	private int numberArgon = 80 ;
 
 	// Use this for initialization
 	void Start () {
