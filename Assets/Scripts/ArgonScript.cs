@@ -14,7 +14,9 @@ public class ArgonScript : MonoBehaviour {
     private float calculateValue;
     private float scalar;
     private float velocity;
-    private float maxDistance = 2.5f;
+    private float maxVelocity;
+    private float sqrMaxVelocity;
+    private float maxDistance = 3f;
     private Vector3 unitVector;
     private Vector3 randomVector;
     private Vector3 velocityVector;
@@ -44,6 +46,8 @@ public class ArgonScript : MonoBehaviour {
 
         this.forceFromObj = new Vector3[this.numberOfMolecule+ 1];
 
+        setMaxVelocity(5f);
+
         //		Debug.Log (4*128*Mathf.Pow(342,12)+" eiei " + 4*128*Mathf.Pow(342,6));
         alpha = Random.Range(-3.0f, 3.0f);
         beta = Random.Range(-3.0f, 3.0f);
@@ -65,7 +69,7 @@ public class ArgonScript : MonoBehaviour {
         //	Debug.Log ("velocity x:" + velocityVector.x +" y:" + velocityVector.y + " z:"+velocityVector.z);
 
         momentumVector = massArgon * velocityVector;
-        //	Debug.Log ("momentum x:" + momentumVector.x +" y:" + momentumVector.y + " z:"+momentumVector.z);
+        //Debug.Log ("momentum x:" + momentumVector.x +" y:" + momentumVector.y + " z:"+momentumVector.z);
 
         rb.velocity = momentumVector;
         //for(int i = 0 ; i < gameController.getNumberArgon() ; i++){
@@ -96,9 +100,16 @@ public class ArgonScript : MonoBehaviour {
                 calculationcForce(otherTransformObj, time);
             }
         }
-
-
         periodicBoundary();
+        if(rb.velocity.sqrMagnitude > this.sqrMaxVelocity)
+        {
+            Debug.Log(" rb.velocity.normalized " + rb.velocity.normalized);
+            rb.velocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+            rb.velocity = massArgon * velocityVector;
+            Debug.Log(" rb.velocity.velocity " + rb.velocity.x + " y " + rb.velocity.y + " z " + rb.velocity.z);
+        }
+
         //forceVector.Set(0f, 0f, 0f);
     
 
@@ -150,8 +161,8 @@ public class ArgonScript : MonoBehaviour {
         }
         else
         {
-            float energy = 12 * 4 * wellDepth * Mathf.Pow(diameter, 12) * Mathf.Pow(scalarDistance, -14) - 6 * 4 * wellDepth * Mathf.Pow(diameter, 6) * Mathf.Pow(scalarDistance, -8);
-            rb.AddForce(0.5f * (energy * (tempPosition - position) * time));
+            //float energy = 12 * 4 * wellDepth * Mathf.Pow(diameter, 12) * Mathf.Pow(scalarDistance, -14) - 6 * 4 * wellDepth * Mathf.Pow(diameter, 6) * Mathf.Pow(scalarDistance, -8);
+            //rb.AddForce(0.5f * (energy * (tempPosition - position) * time));
         }
        
     }
@@ -159,29 +170,29 @@ public class ArgonScript : MonoBehaviour {
     void periodicBoundary()
     {
         Vector3 position = this.transform.position;
-        if (position.x >= 5f)
+        if (position.x >= 5.01f)
         {
-            position.x = -5f;
+            position.x = -5.01f;
         }
-        else if (position.x <= -5f)
+        else if (position.x <= -5.01f)
         {
-            position.x = 5f;
+            position.x = 5.01f;
         }
-        else if (position.y >= 5f)
+        else if (position.y >= 5.01f)
         {
-            position.y = -5f;
+            position.y = -5.01f;
         }
-        else if (position.y <= -5f)
+        else if (position.y <= -5.01f)
         {
-            position.y = 5f;
+            position.y = 5.01f;
         }
-        else if (position.z >= 5f)
+        else if (position.z >= 5.01f)
         {
-            position.z = -5f;
+            position.z = -5.01f;
         }
-        else if (position.z <= -5f)
+        else if (position.z <= -5.01f)
         {
-            position.z = 5f;
+            position.z = 5.01f;
         }
         rb.MovePosition(position);
     }
@@ -211,5 +222,11 @@ public class ArgonScript : MonoBehaviour {
         {
             this.tempObjectPosition.z += 10;
         }
+    }
+
+    void setMaxVelocity(float maxVelocity)
+    {
+        this.maxVelocity = maxVelocity;
+        this.sqrMaxVelocity = Mathf.Pow(maxVelocity, 2);
     }
 }
