@@ -10,7 +10,6 @@ public class GameController : MonoBehaviour {
 
 	private int numberArgon = 100 ;
 
-
 	// Use this for initialization
 	void Start () {
 		for(int i = 0 ; i < numberArgon ; i++){
@@ -20,10 +19,6 @@ public class GameController : MonoBehaviour {
 		foreach (ArgonScript argon in argons) {
 			argon.transform.SetParent (this.transform);
 		}
-
-//		for(int i = 0 ; i < numberArgon ; i++){
-//			Debug.Log ("x:" + this.transform.GetChild(i).position.x+" y:" +  this.transform.GetChild(i).position.y+" z:" +  this.transform.GetChild(i).position.z);
-//		}
 	}
 
 	// Update is called once per frame
