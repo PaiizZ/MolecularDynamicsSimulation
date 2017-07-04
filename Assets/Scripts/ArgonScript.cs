@@ -14,7 +14,7 @@ public class ArgonScript : MonoBehaviour {
     private float calculateValue;
     private float scalar;
     private float velocity;
-    private float maxDistance =0.5f;
+    private float maxDistance = 2.5f;
     private Vector3 unitVector;
     private Vector3 randomVector;
     private Vector3 velocityVector;
@@ -108,10 +108,7 @@ public class ArgonScript : MonoBehaviour {
         Vector3 position = transform.position;
         Vector3 tempPosition = obj.position;
 
-        //    Debug.Log("wellDepth " + wellDepth);
-        //    Debug.Log("diameter " + diameter);
-        //    Debug.Log("scalePosition x :" + this.transform.position.x +", other :" +obj.x + " y :" + this.transform.position.y + ", other :" + obj.y + " z : other :" + this.transform.position.z + "," + obj.z);
-        float distance = (Mathf.Sqrt(Mathf.Pow((tempPosition.x - position.x), 2) +
+         float distance = (Mathf.Sqrt(Mathf.Pow((tempPosition.x - position.x), 2) +
                                            Mathf.Pow((tempPosition.y - position.y), 2) +
                                            Mathf.Pow((tempPosition.z - position.z), 2)));
         // Debug.Log("distance " + distance);
@@ -120,22 +117,13 @@ public class ArgonScript : MonoBehaviour {
 
         //Debug.Log ("scalePosition : " + scalePosition);
 
-        // if (distance > maxDistance){
-        //    float energy = 12 * 4 * wellDepth * Mathf.Pow(diameter, 12) * Mathf.Pow(distance, -14) - 6 * 4 * wellDepth * Mathf.Pow(diameter, 6) * Mathf.Pow(distance, -8);
-        //    rb.AddForce( energy * (tempPosition - position));
-        //}
         if (distance <= maxDistance)
         {
             float energy = 12 * 4 * wellDepth * Mathf.Pow(diameter, 12) * Mathf.Pow(scalarDistance, -14) - 6 * 4 * wellDepth * Mathf.Pow(diameter, 6) * Mathf.Pow(scalarDistance, -8);
-            Debug.Log ("energy "+energy);
-            rb.AddForce( -(energy * (tempPosition - position)));
+            //Debug.Log ("energy "+energy);
+            rb.AddForce( 0.5f * (-energy * (tempPosition - position) * time));
         }
-        //Debug.Log ("energy "+energy);
-        //float forceX = energy * (this.transform.position.x - obj.position.x);
-        //float forceY = energy * (this.transform.position.y - obj.position.y);
-        //float forceZ = energy * (this.transform.position.z - obj.position.z);
-        //Debug.Log ("Force x:"+forceX+" y:"+forceY+" z:"+forceZ);
-
+       
     }
 
     void periodicBoundary()
