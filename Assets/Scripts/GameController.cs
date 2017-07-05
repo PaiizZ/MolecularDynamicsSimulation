@@ -13,7 +13,7 @@ public class GameController : MonoBehaviour {
     public Text nameText, moentumText, forceText, tempText, positionText;
 
     // private number of argon molecular
-    private int numberArgon = 80;
+    private int numberArgon = 50;
 
     public static GameController getInstance()
     {
@@ -36,9 +36,10 @@ public class GameController : MonoBehaviour {
         if (argonFocus != null)
         {
             nameText.text = "Name : " + argonFocus.objName;
-            forceText.text = "Force : " + (argonFocus.objForce.magnitude * 5f).ToString("F10") + " N";
-            //Vector3 argonPosition = argonFocus.transform.position;
-            positionText.text = "Position  x : " + argonFocus.objPosition.x.ToString("F3") + " y : " + argonFocus.objPosition.y + " z : " + argonFocus.objPosition.z;
+            moentumText.text = "Momentum : " + argonFocus.momentumVector.magnitude.ToString("F8");
+            forceText.text = "Force : " + (argonFocus.objForce.magnitude).ToString("F15") + " N";
+            tempText.text = "Temperature " + argonFocus.T + " Kelvins"; 
+            positionText.text = "Position  x : " + argonFocus.objPosition.x.ToString("F3") + " y : " + argonFocus.objPosition.y.ToString("F3") + " z : " + argonFocus.objPosition.z.ToString("F3");
         }
     }
 

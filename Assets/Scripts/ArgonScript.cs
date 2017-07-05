@@ -16,11 +16,12 @@ public class ArgonScript : MonoBehaviour {
     private float velocity;
     private float maxVelocity;
     private float sqrMaxVelocity;
-    private float maxDistance = 1f;
+    private float maxDistance = 2f;
+    public float molecularSpeed;
     private Vector3 unitVector;
     private Vector3 randomVector;
     private Vector3 velocityVector;
-    private Vector3 momentumVector;
+    public Vector3 momentumVector;
     private Vector3 forceTotal;
     private Vector3 forceVector;
     private Vector3 positionVector;
@@ -49,7 +50,7 @@ public class ArgonScript : MonoBehaviour {
 
         this.forceFromObj = new Vector3[this.numberOfMolecule+ 1];
 
-        setMaxVelocity(10f);
+        setMaxVelocity(8f);
 
         //		Debug.Log (4*128*Mathf.Pow(342,12)+" eiei " + 4*128*Mathf.Pow(342,6));
         alpha = Random.Range(-3.0f, 3.0f);
@@ -183,7 +184,6 @@ public class ArgonScript : MonoBehaviour {
                     forceFromObj[i] = force;
                     this.addObjForce(forceFromObj[i]);
                 }
-
             }
             else
             {
