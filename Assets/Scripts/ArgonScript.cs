@@ -50,9 +50,10 @@ public class ArgonScript : MonoBehaviour {
 
         this.forceFromObj = new Vector3[this.numberOfMolecule+ 1];
 
-        setMaxVelocity(8f);
+        this.clickOn = false;
 
-        //		Debug.Log (4*128*Mathf.Pow(342,12)+" eiei " + 4*128*Mathf.Pow(342,6));
+        setMaxVelocity(8f);
+      
         alpha = Random.Range(-3.0f, 3.0f);
         beta = Random.Range(-3.0f, 3.0f);
         gamma = Random.Range(-3.0f, 3.0f);
@@ -60,28 +61,18 @@ public class ArgonScript : MonoBehaviour {
         randomVector = new Vector3(alpha, beta, gamma);
 
         calculateValue = Mathf.Pow(alpha, 2) + Mathf.Pow(beta, 2) + Mathf.Pow(gamma, 2);
-        //	Debug.Log ("calculateValue: " + calculateValue);
-
+      
         scalar = Mathf.Sqrt(calculateValue);
-        //	Debug.Log ("scaleVector: " + scalar);
-
+        
         unitVector = (1 / scalar) * randomVector;
-        //		Debug.Log ("unitVector: " + unitVector);
+        
         velocity = Mathf.Sqrt((3 * R * T) / (massArgon * calculateValue));
-        //    Debug.Log("velocity :" + velocity);
-        velocityVector = velocity * randomVector;
-        //	Debug.Log ("velocity x:" + velocityVector.x +" y:" + velocityVector.y + " z:"+velocityVector.z);
+      
+        velocityVector = velocity * randomVector;     
 
-        momentumVector = massArgon * velocityVector;
-        //Debug.Log ("momentum x:" + momentumVector.x +" y:" + momentumVector.y + " z:"+momentumVector.z);
+        momentumVector = massArgon * velocityVector;      
 
-        rb.velocity = momentumVector;
-        //for(int i = 0 ; i < gameController.getNumberArgon() ; i++){
-        //			if(this.transform.position.x != gameController.gameObject.transform.GetChild(i).position.x){
-        //	        Debug.Log ("x:" + gameController.gameObject.transform.GetChild(i).position.x+" y:" +  gameController.gameObject.transform.GetChild(i).position.y+" z:" +  gameController.gameObject.transform.GetChild(i).position.z);
-        //		}
-        //	}
-        this.clickOn = false;
+        rb.velocity = momentumVector;      
     }
 
 

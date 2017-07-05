@@ -5,16 +5,18 @@ using UnityEngine.UI;
 
 public class GameController : MonoBehaviour {
 
+    //model of molecule that use to cloning
 	public ArgonScript argonPerfab;
+    //focus molecule about information
     private ArgonScript argonFocus;
+    //List of molecules that created
 	public List<ArgonScript> argons = new List<ArgonScript> ();
-
     //another Text that show on Sence
     public Text nameText, moentumText, forceText, tempText, positionText;
-
-    // private number of argon molecular
+    // private number of argon molecules
     private int numberArgon = 100;
 
+    //Get GameCotroller for anthor script use 
     public static GameController getInstance()
     {
         return GameObject.Find("GameController").GetComponent<GameController>();
@@ -43,10 +45,12 @@ public class GameController : MonoBehaviour {
         }
     }
 
+    //Get number of molecule
 	public int getNumberArgon(){
 		return this.numberArgon;
 	}
 
+    //Change focus of molecule to anothor molecule 
     public void changeArgonFocus(ArgonScript molecule)
     {
         if (this.argonFocus == null)
