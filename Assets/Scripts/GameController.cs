@@ -33,8 +33,13 @@ public class GameController : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-
-	}
+        if (argonFocus != null)
+        {
+            nameText.text = "Name : " + argonFocus.objName;
+            forceText.text = "Force : " + (argonFocus.objForce.magnitude *5f).ToString("F10") + " N";
+               
+        }
+    }
 
 	public int getNumberArgon(){
 		return this.numberArgon;
