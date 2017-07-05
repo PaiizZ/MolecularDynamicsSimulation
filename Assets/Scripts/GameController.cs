@@ -1,14 +1,21 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameController : MonoBehaviour {
 
 	public ArgonScript argonPerfab;
+    private ArgonScript argonFocus;
 	public List<ArgonScript> argons = new List<ArgonScript> ();
+
+    public Text nameText, moentumText, forceText, tempText, positionText;
+
 	// private number of argon molecular
 
 	private int numberArgon = 80 ;
+
+  
 
 	// Use this for initialization
 	void Start () {
@@ -29,4 +36,6 @@ public class GameController : MonoBehaviour {
 	public int getNumberArgon(){
 		return this.numberArgon;
 	}
+
+  
 }

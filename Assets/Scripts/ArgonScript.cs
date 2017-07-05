@@ -33,10 +33,11 @@ public class ArgonScript : MonoBehaviour {
     private int numberOfMolecule;
     private float time;
 
+    public bool clickOn;
+
     // Use this for initialization
     void Start() {
-        GameObject go = GameObject.Find("GameController");
-        gameController = (GameController)go.GetComponent(typeof(GameController));
+        gameController = GameController.getInstance();
 
         rb = GetComponent<Rigidbody>();
 
@@ -77,6 +78,7 @@ public class ArgonScript : MonoBehaviour {
         //	        Debug.Log ("x:" + gameController.gameObject.transform.GetChild(i).position.x+" y:" +  gameController.gameObject.transform.GetChild(i).position.y+" z:" +  gameController.gameObject.transform.GetChild(i).position.z);
         //		}
         //	}
+        this.clickOn = false;
     }
 
 
@@ -105,9 +107,9 @@ public class ArgonScript : MonoBehaviour {
             rb.velocity = massArgon * velocityVector;
             Debug.Log(" rb.velocity.velocity2 " + rb.velocity.x + " y " + rb.velocity.y + " z " + rb.velocity.z);
         }
-
+        checkOnClick();
         //forceVector.Set(0f, 0f, 0f);
-    
+
 
 
     }
@@ -170,11 +172,6 @@ public class ArgonScript : MonoBehaviour {
                     forceFromObj[i] = force;
                     this.addObjForce(forceFromObj[i]);
                 }
-            else
-            {
-                //float energy = 12 * 4 * wellDepth * Mathf.Pow(diameter, 12) * Mathf.Pow(scalarDistance, -14) - 6 * 4 * wellDepth * Mathf.Pow(diameter, 6) * Mathf.Pow(scalarDistance, -8);
-                //rb.AddForce(0.5f * (energy * (tempPosition - position) * time));
-            }
        }
     }
        
@@ -251,4 +248,6 @@ public class ArgonScript : MonoBehaviour {
     {
         this.objForce += force;
     }
+
+   
 }
