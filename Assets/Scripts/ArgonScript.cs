@@ -249,5 +249,26 @@ public class ArgonScript : MonoBehaviour {
         this.objForce += force;
     }
 
-   
+    public void OnMouseDown()
+    {
+        this.clickOn = true;
+        GameController.getInstance().changeArgonFocus(this);
+    }
+    public void changeOnClick()
+    {
+        this.clickOn = false;
+    }
+
+    void checkOnClick()
+    {
+        if (clickOn)
+        {
+            this.GetComponent<Renderer>().material.color = Color.green;
+        }
+        else if (!clickOn)
+        {
+            this.GetComponent<Renderer>().material.color = Color.red;
+        }
+    }
+
 }

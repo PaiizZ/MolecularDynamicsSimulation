@@ -9,16 +9,19 @@ public class GameController : MonoBehaviour {
     private ArgonScript argonFocus;
 	public List<ArgonScript> argons = new List<ArgonScript> ();
 
+    //another Text that show on Sence
     public Text nameText, moentumText, forceText, tempText, positionText;
 
 	// private number of argon molecular
-
 	private int numberArgon = 80 ;
 
-  
+    public static GameController getInstance()
+    {
+        return GameObject.Find("GameController").GetComponent<GameController>();
+    }
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
 		for(int i = 0 ; i < numberArgon ; i++){
 			argons.Add (Instantiate(argonPerfab,new Vector3(Random.Range(-4.8f, 4.8f),Random.Range(-4.8f, 4.8f),Random.Range(-4.8f, 4.8f)),Quaternion.identity));
 		}
@@ -37,5 +40,16 @@ public class GameController : MonoBehaviour {
 		return this.numberArgon;
 	}
 
-  
+    public void changeArgonFocus(ArgonScript molecule)
+    {
+        if (this.argonFocus == null)
+        {
+            this.argonFocus = molecule;
+        }
+        else
+        {
+            this.argonFocus.changeOnClick();
+            this.argonFocus = molecule;
+        }
+    }
 }
