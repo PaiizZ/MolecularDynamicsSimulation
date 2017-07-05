@@ -5,7 +5,7 @@ using UnityEngine;
 public class ArgonScript : MonoBehaviour {
     private Rigidbody rb;
     private float R = 8.31447f * Mathf.Pow(10, -3); //molar gas constant ( KJ/mol )
-    private float T = 298f; // temperature in kelvins (25+273)
+    public float T = 298f; // temperature in kelvins (25+273)
     //private float massArgon = 39.948f/ (6 * Mathf.Pow(10,23)) ; // ( g / molecule )
     private float massArgon = 39.948f * Mathf.Pow(10, -3); // ( Kg / molecule )
     private float alpha;
@@ -16,7 +16,7 @@ public class ArgonScript : MonoBehaviour {
     private float velocity;
     private float maxVelocity;
     private float sqrMaxVelocity;
-    private float maxDistance = 2.5f;
+    private float maxDistance = 1f;
     private Vector3 unitVector;
     private Vector3 randomVector;
     private Vector3 velocityVector;
@@ -28,6 +28,7 @@ public class ArgonScript : MonoBehaviour {
     private GameController gameController;
     private Vector3 tempObjectPosition;
     public Vector3 objForce;
+    public Vector3 objPosition;
     public string objName;
     private Vector3[] forceFromObj;
     private Transform otherTransformObj;
@@ -126,7 +127,7 @@ public class ArgonScript : MonoBehaviour {
             this.otherTransformObj = gameController.transform.GetChild(i);
             Vector3 position = transform.position;
             Vector3 tempPosition = otherTransformObj.position;
-
+            periodicBoundary();
             if (position.x != tempPosition.x && position.y != tempPosition.y && position.z != tempPosition.z)
             {
 
@@ -173,11 +174,21 @@ public class ArgonScript : MonoBehaviour {
                     forceFromObj[i] = force;
                     this.addObjForce(forceFromObj[i]);
                 }
+                else
+                {
+                    float energy = 12 * 4 * wellDepth * Mathf.Pow(diameter, 12) * Mathf.Pow(scalarDistance, -14) - 6 * 4 * wellDepth * Mathf.Pow(diameter, 6) * Mathf.Pow(scalarDistance, -8);             
+                    Vector3 force = 0.5f * (energy * (tempPosition - position) * time);
+                    rb.AddForce(force);
+                    this.delObjForce(forceFromObj[i]);
+                    forceFromObj[i] = force;
+                    this.addObjForce(forceFromObj[i]);
+                }
 
             }
             else
             {
                 this.objName = "Argon " + i;
+                objPosition = position;
             }
         }
        
@@ -194,7 +205,8 @@ public class ArgonScript : MonoBehaviour {
         {
             position.x = 5.01f;
         }
-        else if (position.y >= 5.01f)
+
+        if (position.y >= 5.01f)
         {
             position.y = -5.01f;
         }
@@ -202,7 +214,8 @@ public class ArgonScript : MonoBehaviour {
         {
             position.y = 5.01f;
         }
-        else if (position.z >= 5.01f)
+
+        if (position.z >= 5.01f)
         {
             position.z = -5.01f;
         }
