@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class ArgonScript : MonoBehaviour
 {
+    //Physical of molecule
 	private Rigidbody rb;
-
+    //Controller every molecules
 	private GameController gameController;
-
 	// molar gas constant ( KJ/mol )
 	private float R = 8.31447f * Mathf.Pow (10, -3);
 	// temperature in kelvins (25+273)
@@ -26,7 +26,7 @@ public class ArgonScript : MonoBehaviour
 	private Vector3 velocityVector;
 	public Vector3 momentumVector;
 	private Vector3 forceVector;
-	private float maxDistance = 2f;
+	private float maxDistance = 3f;
 	//attributes for set max velocity
 	private float sqrMaxVelocity;
 	// attributes for calculate force(Lennaed Jones potential)
@@ -36,8 +36,10 @@ public class ArgonScript : MonoBehaviour
 	private Vector3[] forceFromObj;
 	private int numberOfMolecule;
 	private float time;
-	// attributes for show value on sence
-	public Vector3 objForce;
+    private float wellDepth = 0.128f; //constant well depth of argon (KJ/mol)
+    private float diameter = 3.42f;  //constant diameter of argon (Angstrom)  
+    // attributes for show value on sence
+    public Vector3 objForce;
 	public Vector3 objPosition;
 	public string objName;
 	// boolean to check, when mouse click molecule
@@ -81,13 +83,13 @@ public class ArgonScript : MonoBehaviour
 		rb.velocity = momentumVector;      
 	}
 		
-	// Update is called once per frame
-	void Update ()
-	{
+	// Update is called once per frame 
+	void Update (){
 		setTempPosition ();
 		this.time = Time.deltaTime * Mathf.Pow (10, -12);
 		momentumVector = momentumVector + (0.5f * time * forceVector);
-		calculationcForce (time);
+        forceVector = Vector3.zero;
+        calculationcForce (time);
 		periodicBoundary ();
 		if (rb.velocity.sqrMagnitude > this.sqrMaxVelocity) {
 			Debug.Log (" rb.velocity.velocity1 " + rb.velocity.x + " y " + rb.velocity.y + " z " + rb.velocity.z);
@@ -99,12 +101,10 @@ public class ArgonScript : MonoBehaviour
 		}
 		checkOnClick ();       
 	}
-		
-	public void calculationcForce (float time)
-	{
-		float wellDepth = 0.128f; //constant well depth of argon (KJ/mol)
-		float diameter = 3.42f;  //constant diameter of argon (Angstrom)  
-       
+
+    //Calculate force from Lennaed Jones potential
+    public void calculationcForce (float time)
+    {
 		for (int i = 0; i < this.numberOfMolecule; i++) {
 			this.otherTransformObj = gameController.transform.GetChild (i);
 			Vector3 position = transform.position;
@@ -128,21 +128,24 @@ public class ArgonScript : MonoBehaviour
 					this.delObjForce (forceFromObj [i]);
 					forceFromObj [i] = force;
 					this.addObjForce (forceFromObj [i]);
-				} else if (scalarDistance2 <= maxDistance) {
+                    forceVector += force;
+                } else if (scalarDistance2 <= maxDistance) {
 					float energy = 12 * 4 * wellDepth * Mathf.Pow (diameter, 12) * Mathf.Pow (scalarDistance2, -14) - 6 * 4 * wellDepth * Mathf.Pow (diameter, 6) * Mathf.Pow (scalarDistance2, -8);
 					Vector3 force = 0.5f * (-energy * (tempPosition - tempObjectPosition) * time);
 					rb.AddForce (force);
 					this.delObjForce (forceFromObj [i]);
 					forceFromObj [i] = force;
 					this.addObjForce (forceFromObj [i]);
-				} else {
-					float energy = 12 * 4 * wellDepth * Mathf.Pow (diameter, 12) * Mathf.Pow (scalarDistance, -14) - 6 * 4 * wellDepth * Mathf.Pow (diameter, 6) * Mathf.Pow (scalarDistance, -8);             
-					Vector3 force = 0.5f * (energy * (tempPosition - position) * time);
-					rb.AddForce (force);
-					this.delObjForce (forceFromObj [i]);
-					forceFromObj [i] = force;
-					this.addObjForce (forceFromObj [i]);
-				}
+                    forceVector += force;
+                } else {
+                    float energy = 12 * 4 * wellDepth * Mathf.Pow (diameter, 12) * Mathf.Pow (scalarDistance, -14) - 6 * 4 * wellDepth * Mathf.Pow (diameter, 6) * Mathf.Pow (scalarDistance, -8);             
+                    Vector3 force = 0.5f * (energy * (tempPosition - position) * time);
+                    rb.AddForce (force);
+                    this.delObjForce (forceFromObj [i]);
+                    forceFromObj [i] = force;
+                    this.addObjForce (forceFromObj [i]);
+                    forceVector += force;
+                }
 			} else {
 				this.objName = "Argon " + i;
 				objPosition = position;
@@ -150,8 +153,9 @@ public class ArgonScript : MonoBehaviour
 		}
 	}
 
+    //Periodic Boundary for set position of molecule ,when out side the box to opposite of the box
 	void periodicBoundary ()
-	{
+    {
 		Vector3 position = this.transform.position;
 		if (position.x >= 5.01f) {
 			position.x = -5.01f;
@@ -173,19 +177,25 @@ public class ArgonScript : MonoBehaviour
 		rb.MovePosition (position);
 	}
 
+    //Set position to temp object
 	void setTempPosition ()
 	{
+        //Set tmep object position equals this object position 
 		this.tempObjectPosition = this.transform.position;
 		if (this.tempObjectPosition.x == Mathf.Abs (this.tempObjectPosition.x)) {
 			this.tempObjectPosition.x -= 10;
-		} else {
+		}
+        else {
 			this.tempObjectPosition.x += 10;
 		}
+
 		if (this.tempObjectPosition.y == Mathf.Abs (this.tempObjectPosition.y)) {
 			this.tempObjectPosition.y -= 10;
-		} else {
+		}
+        else {
 			this.tempObjectPosition.y += 10;
 		}
+
 		if (this.tempObjectPosition.z == Mathf.Abs (this.tempObjectPosition.z)) {
 			this.tempObjectPosition.z -= 10;
 		} else {
@@ -193,32 +203,39 @@ public class ArgonScript : MonoBehaviour
 		}
 	}
 
+    //Set max sqart of velocity
 	void setMaxVelocity (float maxVelocity)
 	{
 		this.sqrMaxVelocity = Mathf.Pow (maxVelocity, 2);
 	}
 
+    //Delete force from object molecule
 	void delObjForce (Vector3 force)
 	{
 		this.objForce -= force;
 	}
 
+    //Add force to object molecule
 	void addObjForce (Vector3 force)
 	{
 		this.objForce += force;
 	}
 
+    //Change clickOn is true, when interest this molecule
+    //and send this object to gameController know about value of this molecule.
 	public void OnMouseDown ()
 	{
 		this.clickOn = true;
 		GameController.getInstance ().changeArgonFocus (this);
 	}
 
+    //Change clickOn is false, when disregrard this molecule.
 	public void changeOnClick ()
 	{
 		this.clickOn = false;
 	}
 
+    //Check click on molecule and change color, when click insterest molecule.
 	void checkOnClick ()
 	{
 		if (clickOn) {

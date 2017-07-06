@@ -15,7 +15,7 @@ public class GameController : MonoBehaviour
 	//another Text that show on Sence
 	public Text nameText, moentumText, forceText, tempText, positionText;
 	// private number of argon molecules
-	private int numberArgon = 100;
+	private int numberArgon = 80;
 
 	//Get GameCotroller for anthor script use
 	public static GameController getInstance ()
