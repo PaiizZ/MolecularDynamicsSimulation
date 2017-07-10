@@ -25,6 +25,8 @@ public class OxygenScript : MonoBehaviour {
     private Vector3 velocityVector;
     public Vector3 momentumVector;
 
+    public GameObject partnerHydrogen = null;
+
     // Use this for initialization
     void Start () {
         gameController = GameController.getInstance();
@@ -54,6 +56,40 @@ public class OxygenScript : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		
-	}
+        periodicBoundary();
+    }
+
+
+    //Periodic Boundary for set position of molecule ,when out side the box to opposite of the box
+    void periodicBoundary()
+    {
+        Vector3 position = this.transform.position;
+        if (position.x >= 5.01f)
+        {
+            position.x = -5.01f;
+        }
+        else if (position.x <= -5.01f)
+        {
+            position.x = 5.01f;
+        }
+
+        if (position.y >= 5.01f)
+        {
+            position.y = -5.01f;
+        }
+        else if (position.y <= -5.01f)
+        {
+            position.y = 5.01f;
+        }
+
+        if (position.z >= 5.01f)
+        {
+            position.z = -5.01f;
+        }
+        else if (position.z <= -5.01f)
+        {
+            position.z = 5.01f;
+        }
+        rb.MovePosition(position);
+    }
 }
