@@ -19,7 +19,7 @@ public class GameController : MonoBehaviour
 
     public HydrogenScript hydrogenPerfab;
     public List<HydrogenScript> hydrogens = new List<HydrogenScript>();
-    private int numberHydrogen = 20;
+    private int numberHydrogen = 80;
 
     public OxygenScript OxygenPerfab;
     public List<OxygenScript> oxygens = new List<OxygenScript>();
@@ -49,14 +49,14 @@ public class GameController : MonoBehaviour
             hydrogen.transform.SetParent (this.transform);
         }
 
-        for (int i = 0; i < numberHydrogen; i++)
-        {
-            oxygens.Add(Instantiate(OxygenPerfab, new Vector3(Random.Range(-4.8f, 4.8f), Random.Range(-4.8f, 4.8f), Random.Range(-4.8f, 4.8f)), Quaternion.identity));
-        }
-        foreach (OxygenScript oxygen in oxygens)
-        {
-            oxygen.transform.SetParent(this.transform);
-        }
+        //for (int i = 0; i < numberOxygen; i++)
+        //{
+        //    oxygens.Add(Instantiate(OxygenPerfab, new Vector3(Random.Range(-4.8f, 4.8f), Random.Range(-4.8f, 4.8f), Random.Range(-4.8f, 4.8f)), Quaternion.identity));
+        //}
+        //foreach (OxygenScript oxygen in oxygens)
+        //{
+        //    oxygen.transform.SetParent(this.transform);
+        //}
 
 
     }
