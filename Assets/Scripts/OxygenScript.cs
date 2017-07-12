@@ -25,19 +25,21 @@ public class OxygenScript : MonoBehaviour {
     private Vector3 velocityVector;
     public Vector3 momentumVector;
     //arttributes of partner
-    public GameObject partnerHydrogen1 = null;
-    public GameObject partnerHydrogen2 = null;
+    public HydrogenScript hydrogenPerfab;
+    private HydrogenScript partnerHydrogen1;
+    private HydrogenScript partnerHydrogen2;
     private float lengthO_H = .1f;
     private float lengthH_H = .1633f;
 
 
-    SpringJoint springJoint;
+    SpringJoint springJoint1;
+    SpringJoint springJoint2;
 
-    public HydrogenScript hydrogenPerfab;
-    public List<HydrogenScript> hydrogens = new List<HydrogenScript>();
+
+    // public List<HydrogenScript> hydrogens = new List<HydrogenScript>();
 
     // Use this for initialization
-    void Start () {
+    void Start() {
         gameController = GameController.getInstance();
 
         rb = GetComponent<Rigidbody>();
@@ -60,96 +62,136 @@ public class OxygenScript : MonoBehaviour {
 
         momentumVector = massArgon * velocityVector;
 
-        //rb.velocity = momentumVector;
+        
 
         // initialization partner of oxygen
         position = this.transform.position;
-        hydrogens.Add(Instantiate(hydrogenPerfab, new Vector3(position.x - lengthH_H/2, position.y - Mathf.Sqrt(Mathf.Pow(lengthO_H,2) - Mathf.Pow(lengthH_H/2, 2)), this.transform.position.z ), Quaternion.identity));
-        hydrogens.Add(Instantiate(hydrogenPerfab, new Vector3(position.x + lengthH_H/2, position.y - Mathf.Sqrt(Mathf.Pow(lengthO_H,2) - Mathf.Pow(lengthH_H/2, 2)), this.transform.position.z ), Quaternion.identity));
+        //hydrogens.Add(Instantiate(partnerHydrogen1, new Vector3(position.x - lengthH_H / 2, position.y - Mathf.Sqrt(Mathf.Pow(lengthO_H, 2) - Mathf.Pow(lengthH_H / 2, 2)), this.transform.position.z), Quaternion.identity));
+        //hydrogens.Add(Instantiate(partnerHydrogen2, new Vector3(position.x + lengthH_H / 2, position.y - Mathf.Sqrt(Mathf.Pow(lengthO_H, 2) - Mathf.Pow(lengthH_H / 2, 2)), this.transform.position.z), Quaternion.identity));
+        partnerHydrogen1 = Instantiate(hydrogenPerfab, new Vector3(position.x - lengthH_H / 2, position.y - Mathf.Sqrt(Mathf.Pow(lengthO_H, 2) - Mathf.Pow(lengthH_H / 2, 2)), this.transform.position.z), Quaternion.identity);
+        partnerHydrogen2 = Instantiate(hydrogenPerfab, new Vector3(position.x + lengthH_H / 2, position.y - Mathf.Sqrt(Mathf.Pow(lengthO_H, 2) - Mathf.Pow(lengthH_H / 2, 2)), this.transform.position.z), Quaternion.identity);
 
-        foreach (HydrogenScript hydrogen in hydrogens)
-        {
-            hydrogen.transform.SetParent(this.transform);
-        }
+        partnerHydrogen1.transform.SetParent(this.transform);
+        partnerHydrogen1.transform.SetParent(partnerHydrogen2.transform);
+  
+        partnerHydrogen2.transform.SetParent(this.transform);
+        partnerHydrogen2.transform.SetParent(partnerHydrogen1.transform);
+        //foreach (HydrogenScript hydrogen in hydrogens){
+        //    hydrogen.transform.SetParent(this.transform);
+        //}
+        conectMolecule();
+        rb.velocity = momentumVector;
     }
-	
-	// Update is called once per frame
-	void Update () {
+
+    // Update is called once per frame
+    void Update() {
         periodicBoundary();
+    }
+
+    void conectMolecule()
+    {
+           
+        // chemical bond formation suddenly pulls slightly closer together
+        float deltaX1 = partnerHydrogen1.transform.position.x - this.transform.position.x;
+        float deltaY1 = partnerHydrogen1.transform.position.y - this.transform.position.y;
+        float deltaZ1 = partnerHydrogen1.transform.position.z - this.transform.position.z;
+        this.transform.position = new Vector3(
+        this.transform.position.x + 0.25f * deltaX1,
+        this.transform.position.y + 0.25f * deltaY1,
+        this.transform.position.z + 0.25f * deltaZ1);
+        partnerHydrogen1.transform.position = new Vector3(
+        partnerHydrogen1.transform.position.x - 0.25f * deltaX1,
+        partnerHydrogen1.transform.position.y - 0.25f * deltaY1,
+        partnerHydrogen1.transform.position.z - 0.25f * deltaZ1);
+
+        // create SpringJoint to implement covalent bond between these two atoms
+        springJoint1 = this.gameObject.AddComponent<SpringJoint>();
+        springJoint1.connectedBody = partnerHydrogen1.gameObject.GetComponent<Rigidbody>();
+        springJoint1.anchor = new Vector3(0, 0, 0);
+        springJoint1.connectedAnchor = new Vector3(0, 0, 0);
+        springJoint1.spring = 10;
+        springJoint1.minDistance = 0.0f;
+        springJoint1.maxDistance = 0.0f;
+        springJoint1.tolerance = 0.025f;
+        springJoint1.breakForce = Mathf.Infinity;
+        springJoint1.breakTorque = Mathf.Infinity;
+        springJoint1.enableCollision = false;
+        springJoint1.enablePreprocessing = true;
+
+        // chemical bond formation suddenly pulls slightly closer together
+        float deltaX2 = partnerHydrogen2.transform.position.x - this.transform.position.x;
+        float deltaY2 = partnerHydrogen2.transform.position.y - this.transform.position.y;
+        float deltaZ2 = partnerHydrogen2.transform.position.z - this.transform.position.z;
+        this.transform.position = new Vector3(
+        this.transform.position.x + 0.25f * deltaX2,
+        this.transform.position.y + 0.25f * deltaY2,
+        this.transform.position.z + 0.25f * deltaZ2);
+        partnerHydrogen2.transform.position = new Vector3(
+        partnerHydrogen2.transform.position.x - 0.25f * deltaX2,
+        partnerHydrogen2.transform.position.y - 0.25f * deltaY2,
+        partnerHydrogen2.transform.position.z - 0.25f * deltaZ2);
+
+        // create SpringJoint to implement covalent bond between these two atoms
+        springJoint2 = this.gameObject.AddComponent<SpringJoint>();
+        springJoint2.connectedBody = partnerHydrogen2.gameObject.GetComponent<Rigidbody>();
+        springJoint2.anchor = new Vector3(0, 0, 0);
+        springJoint2.connectedAnchor = new Vector3(0, 0, 0);
+        springJoint2.spring = 10;
+        springJoint2.minDistance = 0.0f;
+        springJoint2.maxDistance = 0.0f;
+        springJoint2.tolerance = 0.025f;
+        springJoint2.breakForce = Mathf.Infinity;
+        springJoint2.breakTorque = Mathf.Infinity;
+        springJoint2.enableCollision = false;
+        springJoint2.enablePreprocessing = true;
+
     }
 
     void OnTriggerEnter(Collider other)
     {
-        if (partnerHydrogen1 == null && other.gameObject.CompareTag("Hydrogen"))
-        {
-            HydrogenScript otherHydrogen = (HydrogenScript)other.gameObject.GetComponent("HydrogenScript");
-
-            if (otherHydrogen.partnerOxygen == null) // two free radicals meet and form covalent bond
-            {
-                partnerHydrogen1 = other.gameObject;
-                otherHydrogen.partnerOxygen = this.gameObject;
-
-                // chemical bond formation suddenly pulls slightly closer together
-                float deltaX = partnerHydrogen1.transform.position.x - this.transform.position.x;
-                float deltaY = partnerHydrogen1.transform.position.y - this.transform.position.y;
-                float deltaZ = partnerHydrogen1.transform.position.z - this.transform.position.z;
-                this.transform.position = new Vector3(
-                  this.transform.position.x + 0.25f * deltaX,
-                  this.transform.position.y + 0.25f * deltaY,
-                  this.transform.position.z + 0.25f * deltaZ);
-                partnerHydrogen1.transform.position = new Vector3(
-                partnerHydrogen1.transform.position.x - 0.25f * deltaX,
-                partnerHydrogen1.transform.position.y - 0.25f * deltaY,
-                partnerHydrogen1.transform.position.z - 0.25f * deltaZ);
-
-                // create SpringJoint to implement covalent bond between these two atoms
-                springJoint = this.gameObject.AddComponent<SpringJoint>();
-                springJoint.connectedBody = other.gameObject.GetComponent<Rigidbody>();
-                springJoint.anchor = new Vector3(0, 0, 0);
-                springJoint.connectedAnchor = new Vector3(0, 0, 0);
-                springJoint.spring = 10;
-                springJoint.minDistance = 0.0f;
-                springJoint.maxDistance = 0.0f;
-                springJoint.tolerance = 0.025f;
-                springJoint.breakForce = Mathf.Infinity;
-                springJoint.breakTorque = Mathf.Infinity;
-                springJoint.enableCollision = false;
-                springJoint.enablePreprocessing = true;
-            }
-        }
+        
         
     }
 
     //Periodic Boundary for set position of molecule ,when out side the box to opposite of the box
     void periodicBoundary()
     {
-        Vector3 position = this.transform.position;
-        if (position.x >= 5.01f)
+        this.position = this.transform.position;
+        Vector3 positionH1 = partnerHydrogen1.transform.position;
+        Vector3 positionH2 = partnerHydrogen2.transform.position;
+        if (position.x >= 5.05f && positionH1.x >= 5.05f && positionH2.x >= 5.05f)
         {
             position.x = -5.01f;
         }
-        else if (position.x <= -5.01f)
+        else if (position.x <= -5.05f && positionH1.x <= 5.05f && positionH2.x <= 5.05f)
         {
-            position.x = 5.01f;
+            position.x = 5.01f;     
         }
 
-        if (position.y >= 5.01f)
+        if (position.y >= 5.51f)
         {
             position.y = -5.01f;
+            positionH1.x = -5.01f;
+            positionH2.x = -5.01f;
         }
-        else if (position.y <= -5.01f)
+        else if (position.y <= -5.51f)
         {
             position.y = 5.01f;
+            positionH1.x = -5.01f;
+            positionH2.x = -5.01f;
         }
 
-        if (position.z >= 5.01f)
+        if (position.z >= 5.51f)
         {
             position.z = -5.01f;
+            positionH1.x = -5.01f;
+            positionH2.x = -5.01f;
         }
-        else if (position.z <= -5.01f)
+        else if (position.z <= -5.51f)
         {
             position.z = 5.01f;
         }
         rb.MovePosition(position);
+      
     }
 }

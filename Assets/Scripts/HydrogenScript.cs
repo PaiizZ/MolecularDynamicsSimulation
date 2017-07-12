@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class HydrogenScript : MonoBehaviour {
     //Physical of molecule
-    private Rigidbody rb;
+    public static Rigidbody rb;
     //Controller every molecules
     private GameController gameController;
     // molar gas constant ( KJ/mol )
@@ -28,7 +28,7 @@ public class HydrogenScript : MonoBehaviour {
     public GameObject partnerOxygen = null;
 
     // Use this for initialization
-    void Start () {
+    void Start() {
         gameController = GameController.getInstance();
 
         rb = GetComponent<Rigidbody>();
@@ -56,8 +56,13 @@ public class HydrogenScript : MonoBehaviour {
     }
 
     // Update is called once per frame
-    void Update () {
+    void Update() {
         //periodicBoundary();
+    }
+
+    public static void movePosition(Vector3 pos)
+    {
+        //rb.MovePosition(pos);
     }
 
     //Periodic Boundary for set position of molecule ,when out side the box to opposite of the box
