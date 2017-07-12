@@ -25,10 +25,7 @@ public class HydrogenScript : MonoBehaviour {
     private Vector3 velocityVector;
     public Vector3 momentumVector;
 
-    GameObject partnerOxygen = null;
-    GameObject partnerHydrogen = null;
-    SpringJoint springJoint;
-
+    public GameObject partnerOxygen = null;
 
     // Use this for initialization
     void Start () {
@@ -54,91 +51,13 @@ public class HydrogenScript : MonoBehaviour {
 
         momentumVector = massArgon * velocityVector;
 
-        rb.velocity = momentumVector;
-    }
-	
-	// Update is called once per frame
-	void Update () {
-        periodicBoundary();
+        //rb.velocity = momentumVector;
+
     }
 
-    void OnTriggerEnter(Collider other)
-    {
-        if (partnerHydrogen == null && other.gameObject.CompareTag("Hydrogen"))
-        {
-            HydrogenScript otherHydrogen = (HydrogenScript)other.gameObject.GetComponent("HydrogenScript");
-
-            if (otherHydrogen.partnerHydrogen == null) // two free radicals meet and form covalent bond
-            {
-                partnerHydrogen = other.gameObject;
-                otherHydrogen.partnerHydrogen = this.gameObject;
-
-                // chemical bond formation suddenly pulls slightly closer together
-                float deltaX = partnerHydrogen.transform.position.x - this.transform.position.x;
-                float deltaY = partnerHydrogen.transform.position.y - this.transform.position.y;
-                float deltaZ = partnerHydrogen.transform.position.z - this.transform.position.z;
-                this.transform.position = new Vector3(
-                  this.transform.position.x + 0.25f * deltaX,
-                  this.transform.position.y + 0.25f * deltaY,
-                  this.transform.position.z + 0.25f * deltaZ);
-                  partnerHydrogen.transform.position = new Vector3(
-                  partnerHydrogen.transform.position.x - 0.25f * deltaX,
-                  partnerHydrogen.transform.position.y - 0.25f * deltaY,
-                  partnerHydrogen.transform.position.z - 0.25f * deltaZ);
-
-                // create SpringJoint to implement covalent bond between these two atoms
-                springJoint = this.gameObject.AddComponent<SpringJoint>();
-                springJoint.connectedBody = other.gameObject.GetComponent<Rigidbody>();
-                springJoint.anchor = new Vector3(0, 0, 0);
-                springJoint.connectedAnchor = new Vector3(0, 0, 0);
-                springJoint.spring = 10;
-                springJoint.minDistance = 0.0f;
-                springJoint.maxDistance = 0.0f;
-                springJoint.tolerance = 0.025f;
-                springJoint.breakForce = Mathf.Infinity;
-                springJoint.breakTorque = Mathf.Infinity;
-                springJoint.enableCollision = false;
-                springJoint.enablePreprocessing = true;
-            }
-        }
-
-        if (partnerOxygen == null && other.gameObject.CompareTag("Oxygen"))
-        {
-            OxygenScript otherOxygen = (OxygenScript)other.gameObject.GetComponent("OxygenScript");
-
-            if (otherOxygen.partnerHydrogen == null) // two free radicals meet and form covalent bond
-            {
-                partnerOxygen = other.gameObject;
-                otherOxygen.partnerHydrogen = this.gameObject;
-
-                // chemical bond formation suddenly pulls slightly closer together
-                float deltaX = partnerHydrogen.transform.position.x - this.transform.position.x;
-                float deltaY = partnerHydrogen.transform.position.y - this.transform.position.y;
-                float deltaZ = partnerHydrogen.transform.position.z - this.transform.position.z;
-                this.transform.position = new Vector3(
-                  this.transform.position.x + 0.25f * deltaX,
-                  this.transform.position.y + 0.25f * deltaY,
-                  this.transform.position.z + 0.25f * deltaZ);
-                partnerHydrogen.transform.position = new Vector3(
-                partnerHydrogen.transform.position.x - 0.25f * deltaX,
-                partnerHydrogen.transform.position.y - 0.25f * deltaY,
-                partnerHydrogen.transform.position.z - 0.25f * deltaZ);
-
-                // create SpringJoint to implement covalent bond between these two atoms
-                springJoint = this.gameObject.AddComponent<SpringJoint>();
-                springJoint.connectedBody = other.gameObject.GetComponent<Rigidbody>();
-                springJoint.anchor = new Vector3(0, 0, 0);
-                springJoint.connectedAnchor = new Vector3(0, 0, 0);
-                springJoint.spring = 10;
-                springJoint.minDistance = 0.0f;
-                springJoint.maxDistance = 0.0f;
-                springJoint.tolerance = 0.025f;
-                springJoint.breakForce = Mathf.Infinity;
-                springJoint.breakTorque = Mathf.Infinity;
-                springJoint.enableCollision = false;
-                springJoint.enablePreprocessing = true;
-            }
-        }
+    // Update is called once per frame
+    void Update () {
+        //periodicBoundary();
     }
 
     //Periodic Boundary for set position of molecule ,when out side the box to opposite of the box

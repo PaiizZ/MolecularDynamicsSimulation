@@ -20,12 +20,21 @@ public class OxygenScript : MonoBehaviour {
     private float calculateValue;
     private float scalar;
     private float velocity;
-    //private Vector3 unitVector;
+    private Vector3 position;
     private Vector3 randomVector;
     private Vector3 velocityVector;
     public Vector3 momentumVector;
+    //arttributes of partner
+    public GameObject partnerHydrogen1 = null;
+    public GameObject partnerHydrogen2 = null;
+    private float lengthO_H = .1f;
+    private float lengthH_H = .1633f;
 
-    public GameObject partnerHydrogen = null;
+
+    SpringJoint springJoint;
+
+    public HydrogenScript hydrogenPerfab;
+    public List<HydrogenScript> hydrogens = new List<HydrogenScript>();
 
     // Use this for initialization
     void Start () {
@@ -51,7 +60,17 @@ public class OxygenScript : MonoBehaviour {
 
         momentumVector = massArgon * velocityVector;
 
-        rb.velocity = momentumVector;
+        //rb.velocity = momentumVector;
+
+        // initialization partner of oxygen
+        position = this.transform.position;
+        hydrogens.Add(Instantiate(hydrogenPerfab, new Vector3(position.x - lengthH_H/2, position.y - Mathf.Sqrt(Mathf.Pow(lengthO_H,2) - Mathf.Pow(lengthH_H/2, 2)), this.transform.position.z ), Quaternion.identity));
+        hydrogens.Add(Instantiate(hydrogenPerfab, new Vector3(position.x + lengthH_H/2, position.y - Mathf.Sqrt(Mathf.Pow(lengthO_H,2) - Mathf.Pow(lengthH_H/2, 2)), this.transform.position.z ), Quaternion.identity));
+
+        foreach (HydrogenScript hydrogen in hydrogens)
+        {
+            hydrogen.transform.SetParent(this.transform);
+        }
     }
 	
 	// Update is called once per frame
@@ -59,6 +78,47 @@ public class OxygenScript : MonoBehaviour {
         periodicBoundary();
     }
 
+    void OnTriggerEnter(Collider other)
+    {
+        if (partnerHydrogen1 == null && other.gameObject.CompareTag("Hydrogen"))
+        {
+            HydrogenScript otherHydrogen = (HydrogenScript)other.gameObject.GetComponent("HydrogenScript");
+
+            if (otherHydrogen.partnerOxygen == null) // two free radicals meet and form covalent bond
+            {
+                partnerHydrogen1 = other.gameObject;
+                otherHydrogen.partnerOxygen = this.gameObject;
+
+                // chemical bond formation suddenly pulls slightly closer together
+                float deltaX = partnerHydrogen1.transform.position.x - this.transform.position.x;
+                float deltaY = partnerHydrogen1.transform.position.y - this.transform.position.y;
+                float deltaZ = partnerHydrogen1.transform.position.z - this.transform.position.z;
+                this.transform.position = new Vector3(
+                  this.transform.position.x + 0.25f * deltaX,
+                  this.transform.position.y + 0.25f * deltaY,
+                  this.transform.position.z + 0.25f * deltaZ);
+                partnerHydrogen1.transform.position = new Vector3(
+                partnerHydrogen1.transform.position.x - 0.25f * deltaX,
+                partnerHydrogen1.transform.position.y - 0.25f * deltaY,
+                partnerHydrogen1.transform.position.z - 0.25f * deltaZ);
+
+                // create SpringJoint to implement covalent bond between these two atoms
+                springJoint = this.gameObject.AddComponent<SpringJoint>();
+                springJoint.connectedBody = other.gameObject.GetComponent<Rigidbody>();
+                springJoint.anchor = new Vector3(0, 0, 0);
+                springJoint.connectedAnchor = new Vector3(0, 0, 0);
+                springJoint.spring = 10;
+                springJoint.minDistance = 0.0f;
+                springJoint.maxDistance = 0.0f;
+                springJoint.tolerance = 0.025f;
+                springJoint.breakForce = Mathf.Infinity;
+                springJoint.breakTorque = Mathf.Infinity;
+                springJoint.enableCollision = false;
+                springJoint.enablePreprocessing = true;
+            }
+        }
+        
+    }
 
     //Periodic Boundary for set position of molecule ,when out side the box to opposite of the box
     void periodicBoundary()

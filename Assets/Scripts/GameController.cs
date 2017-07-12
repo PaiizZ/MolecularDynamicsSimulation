@@ -17,13 +17,10 @@ public class GameController : MonoBehaviour
 	// private number of argon molecules
 	private int numberArgon = 80;
 
-    public HydrogenScript hydrogenPerfab;
-    public List<HydrogenScript> hydrogens = new List<HydrogenScript>();
-    private int numberHydrogen = 80;
 
     public OxygenScript OxygenPerfab;
     public List<OxygenScript> oxygens = new List<OxygenScript>();
-    private int numberOxygen = 40;
+    private int numberOxygen = 20;
 
     //Get GameCotroller for anthor script use
     public static GameController getInstance ()
@@ -42,23 +39,13 @@ public class GameController : MonoBehaviour
         //	argon.transform.SetParent (this.transform);
         //}
 
-        for (int i = 0; i < numberHydrogen; i++) {
-            hydrogens.Add (Instantiate (hydrogenPerfab, new Vector3 (Random.Range (-4.8f, 4.8f), Random.Range (-4.8f, 4.8f), Random.Range (-4.8f, 4.8f)), Quaternion.identity));
-        }
-        foreach (HydrogenScript hydrogen in hydrogens) {
-            hydrogen.transform.SetParent (this.transform);
-        }
 
-        for (int i = 0; i < numberOxygen; i++)
-        {
+        for (int i = 0; i < numberOxygen; i++){
             oxygens.Add(Instantiate(OxygenPerfab, new Vector3(Random.Range(-4.8f, 4.8f), Random.Range(-4.8f, 4.8f), Random.Range(-4.8f, 4.8f)), Quaternion.identity));
         }
-        foreach (OxygenScript oxygen in oxygens)
-        {
+        foreach (OxygenScript oxygen in oxygens){
             oxygen.transform.SetParent(this.transform);
         }
-
-
     }
 
     // Update is called once per frame
