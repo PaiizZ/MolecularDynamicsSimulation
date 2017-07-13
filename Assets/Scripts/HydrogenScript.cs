@@ -24,6 +24,7 @@ public class HydrogenScript : MonoBehaviour {
     private Vector3 randomVector;
     private Vector3 velocityVector;
     public Vector3 momentumVector;
+    private Vector3 position;
 
     public GameObject partnerOxygen = null;
 
@@ -68,34 +69,37 @@ public class HydrogenScript : MonoBehaviour {
     //Periodic Boundary for set position of molecule ,when out side the box to opposite of the box
     void periodicBoundary()
     {
-        Vector3 position = this.transform.position;
-        if (position.x >= 5.01f)
+        this.position = this.transform.position;
+        Vector3 positionO = this.transform.parent.transform.position;
+        Vector3 positionH1 = this.transform.parent.GetChild(0).transform.position;
+        Vector3 positionH2 = this.transform.parent.GetChild(1).transform.position;
+        if (positionO.x >= 5.05f && positionH1.x >= 5.05f && positionH2.x >= 5.05f)
         {
-            position.x = -5.01f;
+            position.x = -5.05f;
         }
-        else if (position.x <= -5.01f)
+        else if (positionO.x <= 5.05f && positionH1.x <= 5.05f && positionH2.x <= 5.05f)
         {
-            position.x = 5.01f;
-        }
-
-        if (position.y >= 5.01f)
-        {
-            position.y = -5.01f;
-        }
-        else if (position.y <= -5.01f)
-        {
-            position.y = 5.01f;
+            position.x = 5.05f;
         }
 
-        if (position.z >= 5.01f)
+        if (positionO.y >= 5.05f && positionH1.y >= 5.05f && positionH2.y >= 5.05f)
         {
-            position.z = -5.01f;
+            position.y = -5.05f;
         }
-        else if (position.z <= -5.01f)
+        else if (positionO.y <= 5.05f && positionH1.y <= 5.05f && positionH2.y <= 5.05f)
         {
-            position.z = 5.01f;
+            position.y = 5.05f;
         }
-        rb.MovePosition(position);
+
+        if (positionO.z >= 5.05f && positionH1.z >= 5.05f && positionH2.z >= 5.05f)
+        {
+            position.z = -5.05f;
+        }
+        else if (positionO.z <= 5.05f && positionH1.z <= 5.05f && positionH2.z <= 5.05f)
+        {
+            position.z = 5.05f;
+        }
+        rb.MovePosition(this.position);
     }
 
 }

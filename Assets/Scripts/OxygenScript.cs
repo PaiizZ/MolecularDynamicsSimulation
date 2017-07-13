@@ -161,37 +161,30 @@ public class OxygenScript : MonoBehaviour {
         Vector3 positionH2 = partnerHydrogen2.transform.position;
         if (position.x >= 5.05f && positionH1.x >= 5.05f && positionH2.x >= 5.05f)
         {
-            position.x = -5.01f;
+            position.x = -5.05f;
         }
         else if (position.x <= -5.05f && positionH1.x <= 5.05f && positionH2.x <= 5.05f)
         {
-            position.x = 5.01f;     
+            position.x = 5.05f;     
         }
 
-        if (position.y >= 5.51f)
+        if (position.x >= 5.05f && positionH1.x >= 5.05f && positionH2.x >= 5.05f)
         {
-            position.y = -5.01f;
-            positionH1.x = -5.01f;
-            positionH2.x = -5.01f;
+            position.y = -5.05f;
         }
-        else if (position.y <= -5.51f)
+        else if (position.x <= -5.05f && positionH1.x <= 5.05f && positionH2.x <= 5.05f)
         {
-            position.y = 5.01f;
-            positionH1.x = -5.01f;
-            positionH2.x = -5.01f;
+            position.y = 5.05f;
         }
 
-        if (position.z >= 5.51f)
+        if (position.x >= 5.05f && positionH1.x >= 5.05f && positionH2.x >= 5.05f)
         {
-            position.z = -5.01f;
-            positionH1.x = -5.01f;
-            positionH2.x = -5.01f;
+            position.z = -5.05f;
         }
-        else if (position.z <= -5.51f)
+        else if (position.x <= -5.05f && positionH1.x <= 5.05f && positionH2.x <= 5.05f)
         {
-            position.z = 5.01f;
+            position.z = 5.05f;
         }
-        rb.MovePosition(position);
-      
+        rb.MovePosition(this.position);
     }
 }
