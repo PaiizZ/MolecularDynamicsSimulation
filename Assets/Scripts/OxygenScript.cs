@@ -35,7 +35,7 @@ public class OxygenScript : MonoBehaviour {
     SpringJoint springJoint1;
     SpringJoint springJoint2;
 
-
+    public Component[] hydrogens;
     // public List<HydrogenScript> hydrogens = new List<HydrogenScript>();
 
     // Use this for initialization
@@ -72,20 +72,23 @@ public class OxygenScript : MonoBehaviour {
         partnerHydrogen2 = Instantiate(hydrogenPerfab, new Vector3(position.x + lengthH_H / 2, position.y - Mathf.Sqrt(Mathf.Pow(lengthO_H, 2) - Mathf.Pow(lengthH_H / 2, 2)), this.transform.position.z), Quaternion.identity);
 
         partnerHydrogen1.transform.SetParent(this.transform);
-        partnerHydrogen1.transform.SetParent(partnerHydrogen2.transform);
+        //partnerHydrogen1.transform.SetParent(partnerHydrogen2.transform);
   
         partnerHydrogen2.transform.SetParent(this.transform);
-        partnerHydrogen2.transform.SetParent(partnerHydrogen1.transform);
+        //partnerHydrogen2.transform.SetParent(partnerHydrogen1.transform);
         //foreach (HydrogenScript hydrogen in hydrogens){
         //    hydrogen.transform.SetParent(this.transform);
         //}
-        conectMolecule();
+        
+
+        this.hydrogens = GetComponentsInChildren<HydrogenScript>();
+        //conectMolecule();
         rb.velocity = momentumVector;
     }
 
     // Update is called once per frame
     void Update() {
-        periodicBoundary();
+        //periodicBoundary();
     }
 
     void conectMolecule()
@@ -159,32 +162,46 @@ public class OxygenScript : MonoBehaviour {
         this.position = this.transform.position;
         Vector3 positionH1 = partnerHydrogen1.transform.position;
         Vector3 positionH2 = partnerHydrogen2.transform.position;
-        if (position.x >= 5.05f && positionH1.x >= 5.05f && positionH2.x >= 5.05f)
+        
+        if (position.x >= 5.3f && positionH1.x >= 5.3f && positionH2.x >= 5.3f)
         {
-            position.x = -5.05f;
+            position.x += -5.3f;
+            positionH1.x += -5.3f;
+            positionH2.x += -5.3f;
         }
-        else if (position.x <= -5.05f && positionH1.x <= 5.05f && positionH2.x <= 5.05f)
+        else if (position.x <= -5.3f && positionH1.x <= 5.3f && positionH2.x <= 5.3f)
         {
-            position.x = 5.05f;     
-        }
-
-        if (position.x >= 5.05f && positionH1.x >= 5.05f && positionH2.x >= 5.05f)
-        {
-            position.y = -5.05f;
-        }
-        else if (position.x <= -5.05f && positionH1.x <= 5.05f && positionH2.x <= 5.05f)
-        {
-            position.y = 5.05f;
+            position.x += 5.3f;
+            positionH1.x += -5.3f;
+            positionH2.x += -5.3f;
         }
 
-        if (position.x >= 5.05f && positionH1.x >= 5.05f && positionH2.x >= 5.05f)
+        if (position.x >= 5.3f && positionH1.x >= 5.3f && positionH2.x >= 5.3f)
         {
-            position.z = -5.05f;
+            position.y += -5.3f;
+            positionH1.x += -5.3f;
+            positionH2.x += -5.3f;
         }
-        else if (position.x <= -5.05f && positionH1.x <= 5.05f && positionH2.x <= 5.05f)
+        else if (position.x <= -5.3f && positionH1.x <= 5.3f && positionH2.x <= 5.3f)
         {
-            position.z = 5.05f;
+            position.y += 5.3f;
+            positionH1.x += -5.3f;
+            positionH2.x += -5.3f;
+        }
+
+        if (position.x >= 5.3f && positionH1.x >= 5.3f && positionH2.x >= 5.3f)
+        {
+            position.z += -5.3f;
+            positionH1.x += -5.3f;
+            positionH2.x += -5.3f;
+        }
+        else if (position.x <= -5.3f && positionH1.x <= 5.3f && positionH2.x <= 5.3f)
+        {
+            position.z += 5.3f;
+            positionH1.x += -5.3f;
+            positionH2.x += -5.3f;
         }
         rb.MovePosition(this.position);
+        
     }
 }

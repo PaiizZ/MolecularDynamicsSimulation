@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class HydrogenScript : MonoBehaviour {
     //Physical of molecule
-    public static Rigidbody rb;
+    public Rigidbody rb;
     //Controller every molecules
     private GameController gameController;
     // molar gas constant ( KJ/mol )
@@ -52,7 +52,7 @@ public class HydrogenScript : MonoBehaviour {
 
         momentumVector = massArgon * velocityVector;
 
-        //rb.velocity = momentumVector;
+        rb.velocity = momentumVector;
 
     }
 
@@ -73,33 +73,33 @@ public class HydrogenScript : MonoBehaviour {
         Vector3 positionO = this.transform.parent.transform.position;
         Vector3 positionH1 = this.transform.parent.GetChild(0).transform.position;
         Vector3 positionH2 = this.transform.parent.GetChild(1).transform.position;
-        if (positionO.x >= 5.05f && positionH1.x >= 5.05f && positionH2.x >= 5.05f)
+        if (positionO.x >= 5.5f && positionH1.x >= 5.5f && positionH2.x >= 5.5f)
         {
-            position.x = -5.05f;
+            position.x += -5.3f;
         }
-        else if (positionO.x <= 5.05f && positionH1.x <= 5.05f && positionH2.x <= 5.05f)
+        else if (positionO.x <= 5.5f && positionH1.x <= 5.5f && positionH2.x <= 5.5f)
         {
-            position.x = 5.05f;
-        }
-
-        if (positionO.y >= 5.05f && positionH1.y >= 5.05f && positionH2.y >= 5.05f)
-        {
-            position.y = -5.05f;
-        }
-        else if (positionO.y <= 5.05f && positionH1.y <= 5.05f && positionH2.y <= 5.05f)
-        {
-            position.y = 5.05f;
+            position.x += 5.3f;
         }
 
-        if (positionO.z >= 5.05f && positionH1.z >= 5.05f && positionH2.z >= 5.05f)
+        if (positionO.y >= 5.5f && positionH1.y >= 5.5f && positionH2.y >= 5.5f)
         {
-            position.z = -5.05f;
+            position.y += -5.3f;
         }
-        else if (positionO.z <= 5.05f && positionH1.z <= 5.05f && positionH2.z <= 5.05f)
+        else if (positionO.y <= 5.5f && positionH1.y <= 5.5f && positionH2.y <= 5.5f)
         {
-            position.z = 5.05f;
+            position.y += 5.3f;
         }
-        rb.MovePosition(this.position);
+
+        if (positionO.z >= 5.5f && positionH1.z >= 5.5f && positionH2.z >= 5.5f)
+        {
+            position.z += -5.3f;
+        }
+        else if (positionO.z <= 5.5f && positionH1.z <= 5.5f && positionH2.z <= 5.5f)
+        {
+            position.z += 5.3f;
+        }
+        //rb.MovePosition(this.position);
     }
 
 }
