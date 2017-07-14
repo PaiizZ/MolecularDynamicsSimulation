@@ -60,46 +60,4 @@ public class HydrogenScript : MonoBehaviour {
     void Update() {
         //periodicBoundary();
     }
-
-    public static void movePosition(Vector3 pos)
-    {
-        //rb.MovePosition(pos);
-    }
-
-    //Periodic Boundary for set position of molecule ,when out side the box to opposite of the box
-    void periodicBoundary()
-    {
-        this.position = this.transform.position;
-        Vector3 positionO = this.transform.parent.transform.position;
-        Vector3 positionH1 = this.transform.parent.GetChild(0).transform.position;
-        Vector3 positionH2 = this.transform.parent.GetChild(1).transform.position;
-        if (positionO.x >= 5.5f && positionH1.x >= 5.5f && positionH2.x >= 5.5f)
-        {
-            position.x += -5.3f;
-        }
-        else if (positionO.x <= 5.5f && positionH1.x <= 5.5f && positionH2.x <= 5.5f)
-        {
-            position.x += 5.3f;
-        }
-
-        if (positionO.y >= 5.5f && positionH1.y >= 5.5f && positionH2.y >= 5.5f)
-        {
-            position.y += -5.3f;
-        }
-        else if (positionO.y <= 5.5f && positionH1.y <= 5.5f && positionH2.y <= 5.5f)
-        {
-            position.y += 5.3f;
-        }
-
-        if (positionO.z >= 5.5f && positionH1.z >= 5.5f && positionH2.z >= 5.5f)
-        {
-            position.z += -5.3f;
-        }
-        else if (positionO.z <= 5.5f && positionH1.z <= 5.5f && positionH2.z <= 5.5f)
-        {
-            position.z += 5.3f;
-        }
-        //rb.MovePosition(this.position);
-    }
-
 }
