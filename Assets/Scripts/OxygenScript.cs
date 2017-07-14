@@ -147,12 +147,6 @@ public class OxygenScript : MonoBehaviour {
 
     }
 
-    void OnTriggerEnter(Collider other)
-    {
-        
-        
-    }
-
     //Periodic Boundary for set position of molecule ,when out side the box to opposite of the box
     void periodicBoundary()
     {
@@ -185,6 +179,7 @@ public class OxygenScript : MonoBehaviour {
         {
             position.z = 5.05f;
         }
-        rb.MovePosition(this.position);
+        
+		this.transform.position = new Vector3 (position.x,position.y,position.z);
     }
 }
