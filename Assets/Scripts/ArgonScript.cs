@@ -21,7 +21,7 @@ public class ArgonScript : MonoBehaviour
 	private float calculateValue;
 	private float scalar;
 	private float velocity;
-	private Vector3 unitVector;
+	//private Vector3 unitVector;
 	private Vector3 randomVector;
 	private Vector3 velocityVector;
 	public Vector3 momentumVector;
@@ -72,7 +72,7 @@ public class ArgonScript : MonoBehaviour
       
 		scalar = Mathf.Sqrt (calculateValue);
         
-		unitVector = (1 / scalar) * randomVector;
+		//unitVector = (1 / scalar) * randomVector;
         
 		velocity = Mathf.Sqrt ((3 * R * T) / (massArgon * calculateValue));
       
