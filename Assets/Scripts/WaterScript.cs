@@ -39,6 +39,11 @@ public class WaterScript : MonoBehaviour
 	Vector3 posO;
 	Vector3 posH1;
 	Vector3 posH2;
+	Vector3 posOH1;
+	Vector3 posOH2;
+
+	float enegy;
+
 
 	// Use this for initialization
 	void Start ()
@@ -69,8 +74,8 @@ public class WaterScript : MonoBehaviour
 		initialMolecule ();
 		setParentMolecules ();
 
-		//rb.velocity = momentumVector;
-		rb.velocity = new Vector3(5f,5f,5f);
+		rb.velocity = momentumVector;
+		//rb.velocity = new Vector3(5f,5f,5f);
 		//Debug.Log (this.transform.GetChild (0).position.x + " " + this.transform.GetChild (0).position.y + " " + this.transform.GetChild (0).position.z + " ");
 		//Debug.Log (this.transform.GetChild (1).position.x + " " + this.transform.GetChild (1).position.y + " " + this.transform.GetChild (0).position.z + " ");
 		//Debug.Log (this.transform.GetChild (2).position.x + " " + this.transform.GetChild (2).position.y + " " + this.transform.GetChild (0).position.z + " ");
@@ -96,13 +101,27 @@ public class WaterScript : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
-		periodicBoundary ();
+		//periodicBoundary ();
+		springForce ();
 	}
 
-	void springForce ()
-	{
-
-
+	void springForce (){
+		this.posO = this.transform.GetChild(0).position;
+		this.posH1 = this.transform.GetChild(1).position;
+		this.posH2 = this.transform.GetChild(2).position;
+		this.posOH1 = posH1 - posO;
+		this.posOH2 = posH2 - posO;
+		float angle0 = 1.9106f ;// (rad) 
+		float K0 = 383 ; // (KJ/mol/rad^2)
+		float scalarOH1 = Mathf.Sqrt(Mathf.Pow(posH1.x - posO.x,2)+Mathf.Pow(posH1.y - posO.y,2)+Mathf.Pow(posH1.z - posO.z,2));
+		float scalarOH2 = Mathf.Sqrt(Mathf.Pow(posH2.x - posO.x,2)+Mathf.Pow(posH2.y - posO.y,2)+Mathf.Pow(posH2.z - posO.z,2));
+		float OH1OH2 = (posH1.x-posO.x)*(posH2.x-posO.x)+(posH1.y-posO.y)*(posH2.y-posO.y)+(posH1.z-posO.z)*(posH2.z-posO.z); // (posH1 * posOH2)
+		float angle = Mathf.Acos(OH1OH2/(scalarOH1*scalarOH2)) ;// (rad) 
+		this.enegy = K0 * Mathf.Pow(angle-angle0,2);
+		Vector3 forceOH1 = enegy * 1/(scalarOH1*scalarOH2) * (posOH2 - posOH1*((scalarOH1*scalarOH2)/Mathf.Pow(scalarOH1,2)));
+		Vector3 forceOH2 = enegy * 1/(scalarOH1*scalarOH2) * (posOH1 - posOH2*((scalarOH1*scalarOH2)/Mathf.Pow(scalarOH2,2)));
+		this.transform.GetChild (1).gameObject.GetComponent<Rigidbody> ().AddForce (forceOH1);
+		this.transform.GetChild (2).gameObject.GetComponent<Rigidbody> ().AddForce (forceOH2);
 	}
 
 	//Periodic Boundary for set position of molecule ,when out side the box to opposite of the box
