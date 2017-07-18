@@ -57,9 +57,9 @@ public class WaterScript : MonoBehaviour
 
 		//rb.velocity = momentumVector;
 
-		Debug.Log (this.transform.GetChild(0).position.x+" "+this.transform.GetChild(0).position.y+" "+this.transform.GetChild(0).position.z+" ");
-		Debug.Log (this.transform.GetChild(1).position.x+" "+this.transform.GetChild(1).position.y+" "+this.transform.GetChild(0).position.z+" ");
-		Debug.Log (this.transform.GetChild(2).position.x+" "+this.transform.GetChild(2).position.y+" "+this.transform.GetChild(0).position.z+" ");
+		Debug.Log (this.transform.GetChild (0).position.x + " " + this.transform.GetChild (0).position.y + " " + this.transform.GetChild (0).position.z + " ");
+		Debug.Log (this.transform.GetChild (1).position.x + " " + this.transform.GetChild (1).position.y + " " + this.transform.GetChild (0).position.z + " ");
+		Debug.Log (this.transform.GetChild (2).position.x + " " + this.transform.GetChild (2).position.y + " " + this.transform.GetChild (0).position.z + " ");
 	}
 
 	// Update is called once per frame
@@ -68,7 +68,7 @@ public class WaterScript : MonoBehaviour
 
 	}
 
-	void springForce()
+	void springForce ()
 	{
 		Vector3 hydrogen1 = this.transform.GetChild (1).position;
 		Vector3 hydrogen2 = this.transform.GetChild (2).position;
@@ -76,20 +76,20 @@ public class WaterScript : MonoBehaviour
 		float deltaX1 = hydrogen2.x - hydrogen1.x;
 		float deltaY1 = hydrogen2.y - hydrogen1.y;
 		float deltaZ1 = hydrogen2.z - hydrogen1.z;
-		this.transform.position = new Vector3(
+		this.transform.position = new Vector3 (
 			this.transform.position.x + 0.25f * deltaX1,
 			this.transform.position.y + 0.25f * deltaY1,
 			this.transform.position.z + 0.25f * deltaZ1);
-			hydrogen1 = new Vector3(
+		hydrogen1 = new Vector3 (
 			hydrogen1.x - 0.25f * deltaX1,
 			hydrogen1.y - 0.25f * deltaY1,
 			hydrogen1.z - 0.25f * deltaZ1);
 
 		// create SpringJoint to implement covalent bond between these two atoms
-		spring = this.gameObject.AddComponent<SpringJoint>();
-		spring.connectedBody = this.transform.GetChild (1).gameObject.GetComponent<Rigidbody>();
-		spring.anchor = new Vector3(0, 0, 0);
-		spring.connectedAnchor = new Vector3(0, 0, 0);
+		spring = this.gameObject.AddComponent<SpringJoint> ();
+		spring.connectedBody = this.transform.GetChild (1).gameObject.GetComponent<Rigidbody> ();
+		spring.anchor = new Vector3 (0, 0, 0);
+		spring.connectedAnchor = new Vector3 (0, 0, 0);
 		spring.spring = 10;
 		spring.minDistance = 0.0f;
 		spring.maxDistance = 0.0f;

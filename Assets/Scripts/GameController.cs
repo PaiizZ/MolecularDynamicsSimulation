@@ -19,11 +19,11 @@ public class GameController : MonoBehaviour
 
 
 	public WaterScript WaterPerfab;
-	public List<WaterScript> waters = new List<WaterScript>();
-    private int numberOxygen = 1;
+	public List<WaterScript> waters = new List<WaterScript> ();
+	private int numberOxygen = 1;
 
-    //Get GameCotroller for anthor script use
-    public static GameController getInstance ()
+	//Get GameCotroller for anthor script use
+	public static GameController getInstance ()
 	{
 		return GameObject.Find ("GameController").GetComponent<GameController> ();
 	}
@@ -31,13 +31,13 @@ public class GameController : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
-        //for (int i = 0; i < numberArgon; i++) {
-        //	argons.Add (Instantiate (argonPerfab, new Vector3 (Random.Range (-4.8f, 4.8f), Random.Range (-4.8f, 4.8f), Random.Range (-4.8f, 4.8f)), Quaternion.identity));
-        //}
+		//for (int i = 0; i < numberArgon; i++) {
+		//	argons.Add (Instantiate (argonPerfab, new Vector3 (Random.Range (-4.8f, 4.8f), Random.Range (-4.8f, 4.8f), Random.Range (-4.8f, 4.8f)), Quaternion.identity));
+		//}
 
-        //foreach (ArgonScript argon in argons) {
-        //	argon.transform.SetParent (this.transform);
-        //}
+		//foreach (ArgonScript argon in argons) {
+		//	argon.transform.SetParent (this.transform);
+		//}
 
 
 //        for (int i = 0; i < numberOxygen; i++){
@@ -47,14 +47,14 @@ public class GameController : MonoBehaviour
 //            oxygen.transform.SetParent(this.transform);
 //        }
 
-		for (int i = 0; i < numberOxygen; i++){
-			waters.Add(Instantiate(WaterPerfab, new Vector3(Random.Range(-4.8f, 4.8f), Random.Range(-4.8f, 4.8f), Random.Range(-4.8f, 4.8f)), Quaternion.identity));
+		for (int i = 0; i < numberOxygen; i++) {
+			waters.Add (Instantiate (WaterPerfab, new Vector3 (Random.Range (-4.8f, 4.8f), Random.Range (-4.8f, 4.8f), Random.Range (-4.8f, 4.8f)), Quaternion.identity));
 		}
 
-    }
+	}
 
-    // Update is called once per frame
-    void Update ()
+	// Update is called once per frame
+	void Update ()
 	{
 		if (argonFocus != null) {
 			nameText.text = "Name : " + argonFocus.objName;
