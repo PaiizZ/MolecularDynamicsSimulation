@@ -74,7 +74,7 @@ public class WaterScript : MonoBehaviour
 		initialMolecule ();
 		setParentMolecules ();
 
-		rb.velocity = momentumVector;
+		//rb.velocity = momentumVector;
 		//rb.velocity = new Vector3(5f,5f,5f);
 		//Debug.Log (this.transform.GetChild (0).position.x + " " + this.transform.GetChild (0).position.y + " " + this.transform.GetChild (0).position.z + " ");
 		//Debug.Log (this.transform.GetChild (1).position.x + " " + this.transform.GetChild (1).position.y + " " + this.transform.GetChild (0).position.z + " ");
@@ -101,7 +101,7 @@ public class WaterScript : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
-		//periodicBoundary ();
+		periodicBoundary ();
 		springForce ();
 	}
 
@@ -114,65 +114,72 @@ public class WaterScript : MonoBehaviour
 		float angle0 = 1.9106f ;// (rad) 
 		float K0 = 383 ; // (KJ/mol/rad^2)
 		float scalarOH1 = Mathf.Sqrt(Mathf.Pow(posH1.x - posO.x,2)+Mathf.Pow(posH1.y - posO.y,2)+Mathf.Pow(posH1.z - posO.z,2));
+		Debug.Log ("scalarOH1 " + scalarOH1);
 		float scalarOH2 = Mathf.Sqrt(Mathf.Pow(posH2.x - posO.x,2)+Mathf.Pow(posH2.y - posO.y,2)+Mathf.Pow(posH2.z - posO.z,2));
+		Debug.Log ("scalarOH2 " + scalarOH2);
 		float OH1OH2 = (posH1.x-posO.x)*(posH2.x-posO.x)+(posH1.y-posO.y)*(posH2.y-posO.y)+(posH1.z-posO.z)*(posH2.z-posO.z); // (posH1 * posOH2)
+		Debug.Log ("OH1OH2 " + OH1OH2);
 		float angle = Mathf.Acos(OH1OH2/(scalarOH1*scalarOH2)) ;// (rad) 
-		this.enegy = K0 * Mathf.Pow(angle-angle0,2);
-		Vector3 forceOH1 = enegy * 1/(scalarOH1*scalarOH2) * (posOH2 - posOH1*((scalarOH1*scalarOH2)/Mathf.Pow(scalarOH1,2)));
-		Vector3 forceOH2 = enegy * 1/(scalarOH1*scalarOH2) * (posOH1 - posOH2*((scalarOH1*scalarOH2)/Mathf.Pow(scalarOH2,2)));
+		Debug.Log ("angle " + angle);
+		this.enegy = K0 * (angle-angle0);
+		Debug.Log ("enegy " + enegy);
+		Vector3 forceOH1 = Mathf.Asin(angle) * enegy * 1/(scalarOH1*scalarOH2) * (posOH2 - posOH1*((scalarOH1*scalarOH2)/Mathf.Pow(scalarOH1,2)));
+		Debug.Log ("force1 " + forceOH1);
+		Vector3 forceOH2 = Mathf.Asin(angle) * enegy * 1/(scalarOH1*scalarOH2) * (posOH1 - posOH2*((scalarOH1*scalarOH2)/Mathf.Pow(scalarOH2,2)));
+		Debug.Log ("force2 " + forceOH2);
 		this.transform.GetChild (1).gameObject.GetComponent<Rigidbody> ().AddForce (forceOH1);
 		this.transform.GetChild (2).gameObject.GetComponent<Rigidbody> ().AddForce (forceOH2);
 	}
 
 	//Periodic Boundary for set position of molecule ,when out side the box to opposite of the box
-//	void periodicBoundary ()
-//	{
-//		this.posO = this.transform.GetChild(0).position;
-//		this.posH1 = this.transform.GetChild(1).position;
-//		this.posH2 = this.transform.GetChild(2).position;
-//		if (posO.x >= 5.05f && posH1.x >= 5.05f && posH2.x >= 5.05f) {
-//			position.x = -5.05f;
-//		} else if (posO.x <= -5.05f && posH1.x <= -5.05f && posH2.x <= -5.05f) {
-//			position.x = 5.05f;
-//		}
-//	
-//		if (posO.y >= 5.05f && posH1.y >= 5.05f && posH2.y >= 5.05f) {
-//			position.y = -5.05f;
-//		} else if (posO.y <= -5.05f && posH1.y <= -5.05f && posH2.y <= -5.05f) {
-//			position.y = 5.05f;
-//		}
-//	
-//		if (posO.z >= 5.05f && posH1.z >= 5.05f && posH2.z >= 5.05f) {
-//			position.z = -5.05f;
-//		} else if (posO.z <= -5.05f && posH1.z <= -5.05f && posH2.z <= -5.05f) {
-//			position.z = 5.05f;
-//		}
-//		Debug.Log ("x :" + this.position.x);
-//		//this.transform.position = new Vector3 (position.x, position.y, position.z);
-//		rb.MovePosition (position);
-//	}
-
 	void periodicBoundary ()
 	{
-		Vector3 position = this.transform.position;
-		if (position.x >= 5.01f) {
-			position.x = -5.01f;
-		} else if (position.x <= -5.01f) {
-			position.x = 5.01f;
+		this.posO = this.transform.GetChild(0).position;
+		this.posH1 = this.transform.GetChild(1).position;
+		this.posH2 = this.transform.GetChild(2).position;
+		if (posO.x >= 5.05f && posH1.x >= 5.05f && posH2.x >= 5.05f) {
+			posO.x = -5.05f;
+		} else if (posO.x <= -5.05f && posH1.x <= -5.05f && posH2.x <= -5.05f) {
+			posO.x = 5.05f;
 		}
-
-		if (position.y >= 5.01f) {
-			position.y = -5.01f;
-		} else if (position.y <= -5.01f) {
-			position.y = 5.01f;
+	
+		if (posO.y >= 5.05f && posH1.y >= 5.05f && posH2.y >= 5.05f) {
+			posO.y = -5.05f;
+		} else if (posO.y <= -5.05f && posH1.y <= -5.05f && posH2.y <= -5.05f) {
+			posO.y = 5.05f;
 		}
-
-		if (position.z >= 5.01f) {
-			position.z = -5.01f;
-		} else if (position.z <= -5.01f) {
-			position.z = 5.01f;
+	
+		if (posO.z >= 5.05f && posH1.z >= 5.05f && posH2.z >= 5.05f) {
+			posO.z = -5.05f;
+		} else if (posO.z <= -5.05f && posH1.z <= -5.05f && posH2.z <= -5.05f) {
+			posO.z = 5.05f;
 		}
-		rb.MovePosition (position);
-		//this.transform.position = new Vector3 (position.x, position.y, position.z);
+		//Debug.Log ("x :" + this.position.x);
+		this.transform.GetChild(0).position = new Vector3 (position.x, position.y, position.z);
+		//rb.MovePosition (position);
 	}
+
+//	void periodicBoundary ()
+//	{
+//		Vector3 position = this.transform.position;
+//		if (position.x >= 5.01f) {
+//			position.x = -5.01f;
+//		} else if (position.x <= -5.01f) {
+//			position.x = 5.01f;
+//		}
+//
+//		if (position.y >= 5.01f) {
+//			position.y = -5.01f;
+//		} else if (position.y <= -5.01f) {
+//			position.y = 5.01f;
+//		}
+//
+//		if (position.z >= 5.01f) {
+//			position.z = -5.01f;
+//		} else if (position.z <= -5.01f) {
+//			position.z = 5.01f;
+//		}
+//		rb.MovePosition (position);
+//		//this.transform.position = new Vector3 (position.x, position.y, position.z);
+//	}
 }

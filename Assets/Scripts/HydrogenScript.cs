@@ -13,7 +13,7 @@ public class HydrogenScript : MonoBehaviour
 	// temperature in kelvins (25+273)
 	public float T = 298f;
 	// mass of molecule argon
-	private float massArgon = 10.00794f * Mathf.Pow (10, -3);
+	private float massArgon = 1.00794f * Mathf.Pow (10, -3);
 	// ( Kg / molecule )
 	// attributes
 	private float alpha;
@@ -56,7 +56,7 @@ public class HydrogenScript : MonoBehaviour
 		momentumVector = massArgon * velocityVector;
 
 		conectMolecule ();
-		//rb.velocity = momentumVector;
+		rb.velocity = momentumVector;
 
 	}
 

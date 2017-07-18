@@ -74,7 +74,7 @@ public class OxygenScript : MonoBehaviour
         //}
        
 		conectHydrogenMolecule ();
-		//rb.velocity = momentumVector;
+		rb.velocity = momentumVector;
 	}
 
 	// Update is called once per frame
@@ -104,7 +104,7 @@ public class OxygenScript : MonoBehaviour
 		springJoint1.connectedBody = this.transform.parent.GetChild (1).gameObject.GetComponent<Rigidbody> ();
 		springJoint1.anchor = new Vector3 (0, 0, 0);
 		springJoint1.connectedAnchor = new Vector3 (0, 0, 0);
-		springJoint1.spring = 100;
+		springJoint1.spring = 10;
 		springJoint1.minDistance = 0.0f;
 		springJoint1.maxDistance = 0.0f;
 		springJoint1.tolerance = 0.025f;
@@ -132,7 +132,7 @@ public class OxygenScript : MonoBehaviour
 		springJoint2.connectedBody = this.transform.parent.GetChild (2).gameObject.GetComponent<Rigidbody> ();
 		springJoint2.anchor = new Vector3 (0, 0, 0);
 		springJoint2.connectedAnchor = new Vector3 (0, 0, 0);
-		springJoint2.spring = 100;
+		springJoint2.spring = 10;
 		springJoint2.minDistance = 0.0f;
 		springJoint2.maxDistance = 0.0f;
 		springJoint2.tolerance = 0.025f;
