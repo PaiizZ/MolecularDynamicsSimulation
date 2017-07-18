@@ -75,7 +75,7 @@ public class WaterScript : MonoBehaviour
 		setParentMolecules ();
 
 		rb.velocity = momentumVector;
-		rb.velocity = new Vector3(5f,5f,5f);
+		//rb.velocity = new Vector3(5f,5f,5f);
 		//Debug.Log (this.transform.GetChild (0).position.x + " " + this.transform.GetChild (0).position.y + " " + this.transform.GetChild (0).position.z + " ");
 		//Debug.Log (this.transform.GetChild (1).position.x + " " + this.transform.GetChild (1).position.y + " " + this.transform.GetChild (0).position.z + " ");
 		//Debug.Log (this.transform.GetChild (2).position.x + " " + this.transform.GetChild (2).position.y + " " + this.transform.GetChild (0).position.z + " ");
