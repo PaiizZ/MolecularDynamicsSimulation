@@ -28,7 +28,8 @@ public class WaterScript : MonoBehaviour
 	private Vector3 velocityVector;
 	public Vector3 momentumVector;
 
-
+	public OxygenScript oxygenPerfab;
+	public HydrogenScript hydrogenPerfab;
 	SpringJoint spring;
 
 	// Use this for initialization
@@ -38,6 +39,7 @@ public class WaterScript : MonoBehaviour
 
 		rb = GetComponent<Rigidbody> ();
 
+		position = this.transform.position;
 		alpha = Random.Range (-3.0f, 3.0f);
 		beta = Random.Range (-3.0f, 3.0f);
 		gamma = Random.Range (-3.0f, 3.0f);
@@ -63,6 +65,13 @@ public class WaterScript : MonoBehaviour
 		Debug.Log (this.transform.GetChild (2).position.x + " " + this.transform.GetChild (2).position.y + " " + this.transform.GetChild (0).position.z + " ");
 	}
 
+	void initialMolecule(){
+		Instantiate (oxygenPerfab, new Vector3 (position.x,position.y,position.z), Quaternion.identity);
+		Instantiate (hydrogenPerfab, new Vector3 (Random.Range (-4.8f, 4.8f), Random.Range (-4.8f, 4.8f), Random.Range (-4.8f, 4.8f)), Quaternion.identity);
+		Instantiate (hydrogenPerfab, new Vector3 (Random.Range (-4.8f, 4.8f), Random.Range (-4.8f, 4.8f), Random.Range (-4.8f, 4.8f)), Quaternion.identity);
+		
+	}
+	
 	// Update is called once per frame
 	void Update ()
 	{
