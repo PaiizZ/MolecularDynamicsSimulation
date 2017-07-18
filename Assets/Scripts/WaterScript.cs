@@ -30,6 +30,9 @@ public class WaterScript : MonoBehaviour
 
 	public OxygenScript oxygenPerfab;
 	public HydrogenScript hydrogenPerfab;
+
+	public List<OxygenScript> moleculeO = new List<OxygenScript> ();
+	public List<HydrogenScript> moleculeH = new List<HydrogenScript> ();
 	SpringJoint spring;
 
 	// Use this for initialization
@@ -58,18 +61,31 @@ public class WaterScript : MonoBehaviour
 
 		momentumVector = massWater * velocityVector;
 
-		//rb.velocity = momentumVector;
+		initialMolecule ();
+		setParentMolecules ();
 
-		Debug.Log (this.transform.GetChild (0).position.x + " " + this.transform.GetChild (0).position.y + " " + this.transform.GetChild (0).position.z + " ");
-		Debug.Log (this.transform.GetChild (1).position.x + " " + this.transform.GetChild (1).position.y + " " + this.transform.GetChild (0).position.z + " ");
-		Debug.Log (this.transform.GetChild (2).position.x + " " + this.transform.GetChild (2).position.y + " " + this.transform.GetChild (0).position.z + " ");
+		rb.velocity = momentumVector;
+
+		//Debug.Log (this.transform.GetChild (0).position.x + " " + this.transform.GetChild (0).position.y + " " + this.transform.GetChild (0).position.z + " ");
+		//Debug.Log (this.transform.GetChild (1).position.x + " " + this.transform.GetChild (1).position.y + " " + this.transform.GetChild (0).position.z + " ");
+		//Debug.Log (this.transform.GetChild (2).position.x + " " + this.transform.GetChild (2).position.y + " " + this.transform.GetChild (0).position.z + " ");
 	}
 
-	void initialMolecule(){
-		Instantiate (oxygenPerfab, new Vector3 (position.x,position.y,position.z), Quaternion.identity);
-		Instantiate (hydrogenPerfab, new Vector3 (Random.Range (-4.8f, 4.8f), Random.Range (-4.8f, 4.8f), Random.Range (-4.8f, 4.8f)), Quaternion.identity);
-		Instantiate (hydrogenPerfab, new Vector3 (Random.Range (-4.8f, 4.8f), Random.Range (-4.8f, 4.8f), Random.Range (-4.8f, 4.8f)), Quaternion.identity);
-		
+	void initialMolecule ()
+	{
+		moleculeO.Add (Instantiate (oxygenPerfab, new Vector3 (position.x, position.y, position.z), Quaternion.identity));
+		moleculeH.Add (Instantiate (hydrogenPerfab, new Vector3 (position.x - 0.1633f / 2f, position.y - Mathf.Sqrt (0.1f * 0.1f - Mathf.Pow (0.1633f / 2f, 2f)), position.z), Quaternion.identity));
+		moleculeH.Add (Instantiate (hydrogenPerfab, new Vector3 (position.x + 0.1633f / 2f, position.y - Mathf.Sqrt (0.1f * 0.1f - Mathf.Pow (0.1633f / 2f, 2f)), position.z), Quaternion.identity));
+	}
+
+	void setParentMolecules ()
+	{
+		foreach (OxygenScript o in moleculeO) {
+			o.transform.SetParent (this.transform);
+		}
+		foreach (HydrogenScript h in moleculeH) {
+			h.transform.SetParent (this.transform);
+		}
 	}
 	
 	// Update is called once per frame

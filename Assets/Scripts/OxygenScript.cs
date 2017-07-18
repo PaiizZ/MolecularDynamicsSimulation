@@ -69,17 +69,13 @@ public class OxygenScript : MonoBehaviour
 		position = this.transform.position;
         //hydrogens.Add(Instantiate(partnerHydrogen1, new Vector3(position.x - lengthH_H / 2, position.y - Mathf.Sqrt(Mathf.Pow(lengthO_H, 2) - Mathf.Pow(lengthH_H / 2, 2)), this.transform.position.z), Quaternion.identity));
         //hydrogens.Add(Instantiate(partnerHydrogen2, new Vector3(position.x + lengthH_H / 2, position.y - Mathf.Sqrt(Mathf.Pow(lengthO_H, 2) - Mathf.Pow(lengthH_H / 2, 2)), this.transform.position.z), Quaternion.identity));
-		partnerHydrogen1.transform.SetParent (this.transform);
-		partnerHydrogen1.transform.SetParent (partnerHydrogen2.transform);
 
-		partnerHydrogen2.transform.SetParent (this.transform);
-		partnerHydrogen2.transform.SetParent (partnerHydrogen1.transform);
         //foreach (HydrogenScript hydrogen in hydrogens){
         //    hydrogen.transform.SetParent(this.transform);
         //}
        
-		conectMolecule ();
-		rb.velocity = momentumVector;
+		//conectMolecule ();
+		//rb.velocity = momentumVector;
 	}
 
 	// Update is called once per frame

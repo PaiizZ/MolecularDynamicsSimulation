@@ -55,7 +55,7 @@ public class HydrogenScript : MonoBehaviour
 
 		momentumVector = massArgon * velocityVector;
 
-		rb.velocity = momentumVector;
+		//rb.velocity = momentumVector;
 
 	}
 

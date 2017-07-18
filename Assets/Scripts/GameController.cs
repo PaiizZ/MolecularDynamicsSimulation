@@ -51,6 +51,10 @@ public class GameController : MonoBehaviour
 			waters.Add (Instantiate (WaterPerfab, new Vector3 (Random.Range (-4.8f, 4.8f), Random.Range (-4.8f, 4.8f), Random.Range (-4.8f, 4.8f)), Quaternion.identity));
 		}
 
+		foreach (WaterScript water in waters) {
+			water.transform.SetParent (this.transform);
+		}
+
 	}
 
 	// Update is called once per frame
