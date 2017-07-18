@@ -35,6 +35,11 @@ public class WaterScript : MonoBehaviour
 	public List<HydrogenScript> moleculeH = new List<HydrogenScript> ();
 	SpringJoint spring;
 
+	//spring force
+	Vector3 posO;
+	Vector3 posH1;
+	Vector3 posH2;
+
 	// Use this for initialization
 	void Start ()
 	{
@@ -64,8 +69,8 @@ public class WaterScript : MonoBehaviour
 		initialMolecule ();
 		setParentMolecules ();
 
-		rb.velocity = momentumVector;
-
+		//rb.velocity = momentumVector;
+		rb.velocity = new Vector3(5f,5f,5f);
 		//Debug.Log (this.transform.GetChild (0).position.x + " " + this.transform.GetChild (0).position.y + " " + this.transform.GetChild (0).position.z + " ");
 		//Debug.Log (this.transform.GetChild (1).position.x + " " + this.transform.GetChild (1).position.y + " " + this.transform.GetChild (0).position.z + " ");
 		//Debug.Log (this.transform.GetChild (2).position.x + " " + this.transform.GetChild (2).position.y + " " + this.transform.GetChild (0).position.z + " ");
@@ -91,40 +96,64 @@ public class WaterScript : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
-
+		periodicBoundary ();
 	}
 
 	void springForce ()
 	{
-		Vector3 hydrogen1 = this.transform.GetChild (1).position;
-		Vector3 hydrogen2 = this.transform.GetChild (2).position;
-		// chemical bond formation suddenly pulls slightly closer together
-		float deltaX1 = hydrogen2.x - hydrogen1.x;
-		float deltaY1 = hydrogen2.y - hydrogen1.y;
-		float deltaZ1 = hydrogen2.z - hydrogen1.z;
-		this.transform.position = new Vector3 (
-			this.transform.position.x + 0.25f * deltaX1,
-			this.transform.position.y + 0.25f * deltaY1,
-			this.transform.position.z + 0.25f * deltaZ1);
-		hydrogen1 = new Vector3 (
-			hydrogen1.x - 0.25f * deltaX1,
-			hydrogen1.y - 0.25f * deltaY1,
-			hydrogen1.z - 0.25f * deltaZ1);
 
-		// create SpringJoint to implement covalent bond between these two atoms
-		spring = this.gameObject.AddComponent<SpringJoint> ();
-		spring.connectedBody = this.transform.GetChild (1).gameObject.GetComponent<Rigidbody> ();
-		spring.anchor = new Vector3 (0, 0, 0);
-		spring.connectedAnchor = new Vector3 (0, 0, 0);
-		spring.spring = 10;
-		spring.minDistance = 0.0f;
-		spring.maxDistance = 0.0f;
-		spring.tolerance = 0.025f;
-		spring.breakForce = Mathf.Infinity;
-		spring.breakTorque = Mathf.Infinity;
-		spring.enableCollision = false;
-		spring.enablePreprocessing = true;
 
 	}
 
+	//Periodic Boundary for set position of molecule ,when out side the box to opposite of the box
+//	void periodicBoundary ()
+//	{
+//		this.posO = this.transform.GetChild(0).position;
+//		this.posH1 = this.transform.GetChild(1).position;
+//		this.posH2 = this.transform.GetChild(2).position;
+//		if (posO.x >= 5.05f && posH1.x >= 5.05f && posH2.x >= 5.05f) {
+//			position.x = -5.05f;
+//		} else if (posO.x <= -5.05f && posH1.x <= -5.05f && posH2.x <= -5.05f) {
+//			position.x = 5.05f;
+//		}
+//	
+//		if (posO.y >= 5.05f && posH1.y >= 5.05f && posH2.y >= 5.05f) {
+//			position.y = -5.05f;
+//		} else if (posO.y <= -5.05f && posH1.y <= -5.05f && posH2.y <= -5.05f) {
+//			position.y = 5.05f;
+//		}
+//	
+//		if (posO.z >= 5.05f && posH1.z >= 5.05f && posH2.z >= 5.05f) {
+//			position.z = -5.05f;
+//		} else if (posO.z <= -5.05f && posH1.z <= -5.05f && posH2.z <= -5.05f) {
+//			position.z = 5.05f;
+//		}
+//		Debug.Log ("x :" + this.position.x);
+//		//this.transform.position = new Vector3 (position.x, position.y, position.z);
+//		rb.MovePosition (position);
+//	}
+
+	void periodicBoundary ()
+	{
+		Vector3 position = this.transform.position;
+		if (position.x >= 5.01f) {
+			position.x = -5.01f;
+		} else if (position.x <= -5.01f) {
+			position.x = 5.01f;
+		}
+
+		if (position.y >= 5.01f) {
+			position.y = -5.01f;
+		} else if (position.y <= -5.01f) {
+			position.y = 5.01f;
+		}
+
+		if (position.z >= 5.01f) {
+			position.z = -5.01f;
+		} else if (position.z <= -5.01f) {
+			position.z = 5.01f;
+		}
+		rb.MovePosition (position);
+		//this.transform.position = new Vector3 (position.x, position.y, position.z);
+	}
 }
