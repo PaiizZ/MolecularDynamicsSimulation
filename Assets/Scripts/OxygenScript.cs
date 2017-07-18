@@ -75,6 +75,8 @@ public class OxygenScript : MonoBehaviour
        
 		conectHydrogenMolecule ();
 		rb.velocity = momentumVector;
+		//Debug.Log ("O  "+momentumVector.x + " " + momentumVector.y + " " + momentumVector.z);
+		//rb.velocity = new Vector3(5f,5f,5f);
 	}
 
 	// Update is called once per frame
