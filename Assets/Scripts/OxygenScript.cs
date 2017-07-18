@@ -27,14 +27,13 @@ public class OxygenScript : MonoBehaviour
 	private Vector3 velocityVector;
 	public Vector3 momentumVector;
     //arttributes of partner
-	private HydrogenScript partnerHydrogen1;
-	private HydrogenScript partnerHydrogen2;
+	private Vector3 partnerHydrogen1;
+	private Vector3 partnerHydrogen2;
 	private float lengthO_H = .1f;
 	private float lengthH_H = .1633f;
 
-
 	SpringJoint springJoint1;
-
+	SpringJoint springJoint2;
 
 	// public List<HydrogenScript> hydrogens = new List<HydrogenScript>();
 
@@ -74,7 +73,7 @@ public class OxygenScript : MonoBehaviour
         //    hydrogen.transform.SetParent(this.transform);
         //}
        
-		//conectMolecule ();
+		conectHydrogenMolecule ();
 		//rb.velocity = momentumVector;
 	}
 
@@ -84,25 +83,25 @@ public class OxygenScript : MonoBehaviour
 		//periodicBoundary();
 	}
 
-	void conectMolecule ()
+	void conectHydrogenMolecule ()
 	{
-
-		// chemical bond formation suddenly pulls slightly closer together
-		float deltaX1 = partnerHydrogen1.transform.position.x - this.transform.position.x;
-		float deltaY1 = partnerHydrogen1.transform.position.y - this.transform.position.y;
-		float deltaZ1 = partnerHydrogen1.transform.position.z - this.transform.position.z;
-		this.transform.position = new Vector3 (
-			this.transform.position.x + 0.25f * deltaX1,
-			this.transform.position.y + 0.25f * deltaY1,
-			this.transform.position.z + 0.25f * deltaZ1);
-		partnerHydrogen1.transform.position = new Vector3 (
-			partnerHydrogen1.transform.position.x - 0.25f * deltaX1,
-			partnerHydrogen1.transform.position.y - 0.25f * deltaY1,
-			partnerHydrogen1.transform.position.z - 0.25f * deltaZ1);
+//		partnerHydrogen1 = this.transform.parent.GetChild (1).position;
+//		// chemical bond formation suddenly pulls slightly closer together
+//		float deltaX1 = partnerHydrogen1.x - this.transform.position.x;
+//		float deltaY1 = partnerHydrogen1.y - this.transform.position.y;
+//		float deltaZ1 = partnerHydrogen1.z - this.transform.position.z;
+//		this.transform.position = new Vector3 (
+//			this.transform.position.x + 0.25f * deltaX1,
+//			this.transform.position.y + 0.25f * deltaY1,
+//			this.transform.position.z + 0.25f * deltaZ1);
+//			partnerHydrogen1 = new Vector3 (
+//			partnerHydrogen1.x - 0.25f * deltaX1,
+//			partnerHydrogen1.y - 0.25f * deltaY1,
+//			partnerHydrogen1.z - 0.25f * deltaZ1);
 
 		// create SpringJoint to implement covalent bond between these two atoms
 		springJoint1 = this.gameObject.AddComponent<SpringJoint> ();
-		springJoint1.connectedBody = partnerHydrogen1.gameObject.GetComponent<Rigidbody> ();
+		springJoint1.connectedBody = this.transform.parent.GetChild (1).gameObject.GetComponent<Rigidbody> ();
 		springJoint1.anchor = new Vector3 (0, 0, 0);
 		springJoint1.connectedAnchor = new Vector3 (0, 0, 0);
 		springJoint1.spring = 10;
@@ -114,34 +113,60 @@ public class OxygenScript : MonoBehaviour
 		springJoint1.enableCollision = false;
 		springJoint1.enablePreprocessing = true;
 
-       
+//		partnerHydrogen2 = this.transform.parent.GetChild (2).position;
+//		// chemical bond formation suddenly pulls slightly closer together
+//		float deltaX2 = partnerHydrogen2.x - this.transform.position.x;
+//		float deltaY2 = partnerHydrogen2.y - this.transform.position.y;
+//		float deltaZ2 = partnerHydrogen2.z - this.transform.position.z;
+//		this.transform.position = new Vector3 (
+//			this.transform.position.x + 0.25f * deltaX2,
+//			this.transform.position.y + 0.25f * deltaY2,
+//			this.transform.position.z + 0.25f * deltaZ2);
+//			partnerHydrogen2 = new Vector3 (
+//			partnerHydrogen2.x - 0.25f * deltaX2,
+//			partnerHydrogen2.y - 0.25f * deltaY2,
+//			partnerHydrogen2.z - 0.25f * deltaZ2);
+
+		// create SpringJoint to implement covalent bond between these two atoms
+		springJoint2 = this.gameObject.AddComponent<SpringJoint> ();
+		springJoint2.connectedBody = this.transform.parent.GetChild (2).gameObject.GetComponent<Rigidbody> ();
+		springJoint2.anchor = new Vector3 (0, 0, 0);
+		springJoint2.connectedAnchor = new Vector3 (0, 0, 0);
+		springJoint2.spring = 10;
+		springJoint2.minDistance = 0.0f;
+		springJoint2.maxDistance = 0.0f;
+		springJoint2.tolerance = 0.025f;
+		springJoint2.breakForce = Mathf.Infinity;
+		springJoint2.breakTorque = Mathf.Infinity;
+		springJoint2.enableCollision = false;
+		springJoint2.enablePreprocessing = true;
 
 	}
 
 	//Periodic Boundary for set position of molecule ,when out side the box to opposite of the box
-	void periodicBoundary ()
-	{
-		this.position = this.transform.position;
-		Vector3 positionH1 = partnerHydrogen1.transform.position;
-		Vector3 positionH2 = partnerHydrogen2.transform.position;
-		if (position.x >= 5.05f && positionH1.x >= 5.05f && positionH2.x >= 5.05f) {
-			position.x = -5.05f;
-		} else if (position.x <= -5.05f && positionH1.x <= -5.05f && positionH2.x <= -5.05f) {
-			position.x = 5.05f;
-		}
-
-		if (position.y >= 5.05f && positionH1.y >= 5.05f && positionH2.y >= 5.05f) {
-			position.y = -5.05f;
-		} else if (position.y <= -5.05f && positionH1.y <= -5.05f && positionH2.y <= -5.05f) {
-			position.y = 5.05f;
-		}
-
-		if (position.z >= 5.05f && positionH1.z >= 5.05f && positionH2.z >= 5.05f) {
-			position.z = -5.05f;
-		} else if (position.z <= -5.05f && positionH1.z <= -5.05f && positionH2.z <= -5.05f) {
-			position.z = 5.05f;
-		}
-
-		this.transform.position = new Vector3 (position.x, position.y, position.z);
-	}
+//	void periodicBoundary ()
+//	{
+//		this.position = this.transform.position;
+//		Vector3 positionH1 = partnerHydrogen1;
+//		Vector3 positionH2 = partnerHydrogen2.transform.position;
+//		if (position.x >= 5.05f && positionH1.x >= 5.05f && positionH2.x >= 5.05f) {
+//			position.x = -5.05f;
+//		} else if (position.x <= -5.05f && positionH1.x <= -5.05f && positionH2.x <= -5.05f) {
+//			position.x = 5.05f;
+//		}
+//
+//		if (position.y >= 5.05f && positionH1.y >= 5.05f && positionH2.y >= 5.05f) {
+//			position.y = -5.05f;
+//		} else if (position.y <= -5.05f && positionH1.y <= -5.05f && positionH2.y <= -5.05f) {
+//			position.y = 5.05f;
+//		}
+//
+//		if (position.z >= 5.05f && positionH1.z >= 5.05f && positionH2.z >= 5.05f) {
+//			position.z = -5.05f;
+//		} else if (position.z <= -5.05f && positionH1.z <= -5.05f && positionH2.z <= -5.05f) {
+//			position.z = 5.05f;
+//		}
+//
+//		this.transform.position = new Vector3 (position.x, position.y, position.z);
+//	}
 }
