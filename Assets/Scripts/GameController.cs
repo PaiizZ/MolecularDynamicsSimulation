@@ -18,9 +18,9 @@ public class GameController : MonoBehaviour
 	private int numberArgon = 80;
 
 
-    public OxygenScript OxygenPerfab;
-    public List<OxygenScript> oxygens = new List<OxygenScript>();
-    private int numberOxygen = 20;
+	public WaterScript WaterPerfab;
+	public List<WaterScript> waters = new List<WaterScript>();
+    private int numberOxygen = 1;
 
     //Get GameCotroller for anthor script use
     public static GameController getInstance ()
@@ -40,12 +40,17 @@ public class GameController : MonoBehaviour
         //}
 
 
-        for (int i = 0; i < numberOxygen; i++){
-            oxygens.Add(Instantiate(OxygenPerfab, new Vector3(Random.Range(-4.8f, 4.8f), Random.Range(-4.8f, 4.8f), Random.Range(-4.8f, 4.8f)), Quaternion.identity));
-        }
-        foreach (OxygenScript oxygen in oxygens){
-            oxygen.transform.SetParent(this.transform);
-        }
+//        for (int i = 0; i < numberOxygen; i++){
+//            oxygens.Add(Instantiate(OxygenPerfab, new Vector3(Random.Range(-4.8f, 4.8f), Random.Range(-4.8f, 4.8f), Random.Range(-4.8f, 4.8f)), Quaternion.identity));
+//        }
+//        foreach (OxygenScript oxygen in oxygens){
+//            oxygen.transform.SetParent(this.transform);
+//        }
+
+		for (int i = 0; i < numberOxygen; i++){
+			waters.Add(Instantiate(WaterPerfab, new Vector3(Random.Range(-4.8f, 4.8f), Random.Range(-4.8f, 4.8f), Random.Range(-4.8f, 4.8f)), Quaternion.identity));
+		}
+
     }
 
     // Update is called once per frame
