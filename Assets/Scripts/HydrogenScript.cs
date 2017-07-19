@@ -57,7 +57,7 @@ public class HydrogenScript : MonoBehaviour
 
 		conectMolecule ();
 
-		rb.velocity = momentumVector;
+		//rb.velocity = momentumVector;
 
 	}
 
@@ -88,8 +88,22 @@ public class HydrogenScript : MonoBehaviour
 			spring.anchor = new Vector3 (0, 0, 0);
 			spring.connectedAnchor = new Vector3 (0, 0, 0);
 			spring.spring = 10;
-			spring.minDistance = 0;
-			spring.maxDistance = 0;
+			spring.minDistance = 0.1633f;
+			spring.maxDistance = 0.1633f;
+			spring.tolerance = 0.025f;
+			spring.breakForce = Mathf.Infinity;
+			spring.breakTorque = Mathf.Infinity;
+			spring.enableCollision = false;
+			spring.enablePreprocessing = true;
+		} else if (this.transform.parent.GetChild (0).position.x != this.transform.position.x) {
+			// create SpringJoint to implement covalent bond between these two atoms
+			spring = this.gameObject.AddComponent<SpringJoint> ();
+			spring.connectedBody = this.transform.parent.GetChild (0).gameObject.GetComponent<Rigidbody> ();
+			spring.anchor = new Vector3 (0, 0, 0);
+			spring.connectedAnchor = new Vector3 (0, 0, 0);
+			spring.spring = 10;
+			spring.minDistance = 0.1633f;
+			spring.maxDistance = 0.1633f;
 			spring.tolerance = 0.025f;
 			spring.breakForce = Mathf.Infinity;
 			spring.breakTorque = Mathf.Infinity;

@@ -20,7 +20,7 @@ public class GameController : MonoBehaviour
 
 	public OxygenScript OxygenPerfab;
 	public List<OxygenScript> oxygens = new List<OxygenScript> ();
-	private int numberOxygen = 1;
+	private int numberOxygen = 10;
 
 	public WaterScript WaterPerfab;
 	public List<WaterScript> waters = new List<WaterScript> ();
