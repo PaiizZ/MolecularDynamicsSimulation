@@ -4,19 +4,19 @@ using UnityEngine;
 
 public class OxygenScript : MonoBehaviour
 {
-    //Physical of molecule
-    private Rigidbody rb;
-    //Controller every molecules
-    private GameController gameController;
-    // molar gas constant ( KJ/mol )
-    private float R = 8.31447f * Mathf.Pow (10, -3);
-    // temperature in kelvins (25+273)
-    public float T = 298f;
-    // mass of molecule argon
-    private float massArgon = 15.9994f * Mathf.Pow (10, -3);
+	//Physical of molecule
+	private Rigidbody rb;
+	//Controller every molecules
+	private GameController gameController;
+	// molar gas constant ( KJ/mol )
+	private float R = 8.31447f * Mathf.Pow (10, -3);
+	// temperature in kelvins (25+273)
+	public float T = 298f;
+	// mass of molecule argon
+	private float massArgon = 15.9994f * Mathf.Pow (10, -3);
 	// ( Kg / molecule )
-    // attributes
-    private float alpha;
+	// attributes
+	private float alpha;
 	private float beta;
 	private float gamma;
 	private float calculateValue;
@@ -26,7 +26,7 @@ public class OxygenScript : MonoBehaviour
 	private Vector3 randomVector;
 	private Vector3 velocityVector;
 	public Vector3 momentumVector;
-    //arttributes of partner
+	//arttributes of partner
 	private Vector3 partnerHydrogen1;
 	private Vector3 partnerHydrogen2;
 	private float lengthO_H = .1f;
@@ -38,6 +38,20 @@ public class OxygenScript : MonoBehaviour
 	public HydrogenScript hydrogenPerfab;
 	public List<HydrogenScript> hydrogens = new List<HydrogenScript>();
 
+	
+	//spring force
+	Vector3 posO;
+	Vector3 posH1;
+	Vector3 posH2;
+	Vector3 posOH1;
+	Vector3 posOH2;
+
+	float enegy;
+//	public static GameController getInstance ()
+//	{
+//		return GameObject.Find ("GameController").GetComponent<GameController> ();
+//	}
+	
 	// Use this for initialization
 	void Start ()
 	{
@@ -47,6 +61,7 @@ public class OxygenScript : MonoBehaviour
 
 		position = this.transform.position;
 
+		// initialization partner of oxygen
 		initialMolecule ();
 
 		alpha = Random.Range (-3.0f, 3.0f);
@@ -66,22 +81,10 @@ public class OxygenScript : MonoBehaviour
 		velocityVector = velocity * randomVector;
 
 		momentumVector = massArgon * velocityVector;
-
-
-
-		// initialization partner of oxygen
-
-        //hydrogens.Add(Instantiate(partnerHydrogen1, new Vector3(position.x - lengthH_H / 2, position.y - Mathf.Sqrt(Mathf.Pow(lengthO_H, 2) - Mathf.Pow(lengthH_H / 2, 2)), this.transform.position.z), Quaternion.identity));
-        //hydrogens.Add(Instantiate(partnerHydrogen2, new Vector3(position.x + lengthH_H / 2, position.y - Mathf.Sqrt(Mathf.Pow(lengthO_H, 2) - Mathf.Pow(lengthH_H / 2, 2)), this.transform.position.z), Quaternion.identity));
-
-        //foreach (HydrogenScript hydrogen in hydrogens){
-        //    hydrogen.transform.SetParent(this.transform);
-        //}
-       
+		
 		conectHydrogenMolecule ();
 		rb.velocity = momentumVector;
 		//Debug.Log ("O  "+momentumVector.x + " " + momentumVector.y + " " + momentumVector.z);
-		//rb.velocity = new Vector3(5f,5f,5f);
 	}
 
 	void initialMolecule ()
@@ -96,26 +99,44 @@ public class OxygenScript : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
-		//periodicBoundary();
+		periodicBoundary();
 		//this.transform.Translate (momentumVector*Time.deltaTime);
 	}
 
+	void springForce (){
+		this.posO = this.position;
+		this.posH1 = this.transform.GetChild(0).position;
+		this.posH2 = this.transform.GetChild(1).position;
+		this.posOH1 = posH1 - posO;
+		this.posOH2 = posH2 - posO;
+		float angle0 = 1.9106f ;// (rad)
+		float K0 = 383f * Mathf.Pow(10,-2) ; // (KJ/mol/rad^2)
+		float scalarOH1 = Mathf.Sqrt(Mathf.Pow(posH1.x - posO.x,2)+Mathf.Pow(posH1.y - posO.y,2)+Mathf.Pow(posH1.z - posO.z,2));
+		//Debug.Log ("scalarOH1 " + scalarOH1);
+		float scalarOH2 = Mathf.Sqrt(Mathf.Pow(posH2.x - posO.x,2)+Mathf.Pow(posH2.y - posO.y,2)+Mathf.Pow(posH2.z - posO.z,2));
+		//Debug.Log ("scalarOH2 " + scalarOH2);
+		float OH1OH2 = (posH1.x-posO.x)*(posH2.x-posO.x)+(posH1.y-posO.y)*(posH2.y-posO.y)+(posH1.z-posO.z)*(posH2.z-posO.z); // (posH1 * posOH2)
+		//Debug.Log ("OH1OH2 " + OH1OH2);
+		float angle = Mathf.Acos(OH1OH2/(scalarOH1*scalarOH2)) ;// (rad)
+//		Debug.Log ("angle " + angle);
+		this.enegy = K0 * (angle-angle0);
+//		Debug.Log ("enegy " + enegy);
+//		Debug.Log ("Mathf.sin(angle) : " + 1/Mathf.Sin(angle));
+//		Debug.Log ("Mathf.Asin(angle) : " + Mathf.Asin(angle));
+//		Debug.Log ("1/(scalarOH1*scalarOH2) : " + 1/(scalarOH1*scalarOH2));
+//		Debug.Log (": " + (posOH2 - posOH1*((scalarOH1*scalarOH2)/Mathf.Pow(scalarOH1,2))));
+		Vector3 forceH1 =  enegy/Mathf.Sin(angle) * 1/(scalarOH1*scalarOH2) * (posOH2 - posOH1*((scalarOH1*scalarOH2)/Mathf.Pow(scalarOH1,2)));
+		Debug.Log ("force1 x:" + forceH1.x + " y:" + forceH1.y + " z:" + forceH1.z);
+		Vector3 forceH2 =  enegy/Mathf.Sin(angle) * 1/(scalarOH1*scalarOH2) * (posOH1 - posOH2*((scalarOH1*scalarOH2)/Mathf.Pow(scalarOH2,2)));
+//		Debug.Log ("force2 " + forceOH2);
+		Vector3 forceO = - forceH1 - forceH2;
+		rb.AddForce(forceO);
+		this.transform.GetChild (0).gameObject.GetComponent<Rigidbody> ().AddForce (forceH1);
+		this.transform.GetChild (1).gameObject.GetComponent<Rigidbody> ().AddForce (forceH2);
+	}
+	
 	void conectHydrogenMolecule ()
 	{
-//		partnerHydrogen1 = this.transform.parent.GetChild (1).position;
-//		// chemical bond formation suddenly pulls slightly closer together
-//		float deltaX1 = partnerHydrogen1.x - this.transform.position.x;
-//		float deltaY1 = partnerHydrogen1.y - this.transform.position.y;
-//		float deltaZ1 = partnerHydrogen1.z - this.transform.position.z;
-//		this.transform.position = new Vector3 (
-//			this.transform.position.x + 0.25f * deltaX1,
-//			this.transform.position.y + 0.25f * deltaY1,
-//			this.transform.position.z + 0.25f * deltaZ1);
-//			partnerHydrogen1 = new Vector3 (
-//			partnerHydrogen1.x - 0.25f * deltaX1,
-//			partnerHydrogen1.y - 0.25f * deltaY1,
-//			partnerHydrogen1.z - 0.25f * deltaZ1);
-
 		// create SpringJoint to implement covalent bond between these two atoms
 		springJoint1 = this.gameObject.AddComponent<SpringJoint> ();
 		springJoint1.connectedBody = this.transform.GetChild (0).gameObject.GetComponent<Rigidbody> ();
@@ -129,20 +150,6 @@ public class OxygenScript : MonoBehaviour
 		springJoint1.breakTorque = Mathf.Infinity;
 		springJoint1.enableCollision = false;
 		springJoint1.enablePreprocessing = true;
-
-//		partnerHydrogen2 = this.transform.parent.GetChild (2).position;
-//		// chemical bond formation suddenly pulls slightly closer together
-//		float deltaX2 = partnerHydrogen2.x - this.transform.position.x;
-//		float deltaY2 = partnerHydrogen2.y - this.transform.position.y;
-//		float deltaZ2 = partnerHydrogen2.z - this.transform.position.z;
-//		this.transform.position = new Vector3 (
-//			this.transform.position.x + 0.25f * deltaX2,
-//			this.transform.position.y + 0.25f * deltaY2,
-//			this.transform.position.z + 0.25f * deltaZ2);
-//			partnerHydrogen2 = new Vector3 (
-//			partnerHydrogen2.x - 0.25f * deltaX2,
-//			partnerHydrogen2.y - 0.25f * deltaY2,
-//			partnerHydrogen2.z - 0.25f * deltaZ2);
 
 		// create SpringJoint to implement covalent bond between these two atoms
 		springJoint2 = this.gameObject.AddComponent<SpringJoint> ();
@@ -161,29 +168,29 @@ public class OxygenScript : MonoBehaviour
 	}
 
 	//Periodic Boundary for set position of molecule ,when out side the box to opposite of the box
-//	void periodicBoundary ()
-//	{
-//		this.position = this.transform.position;
-//		Vector3 positionH1 = partnerHydrogen1;
-//		Vector3 positionH2 = partnerHydrogen2.transform.position;
-//		if (position.x >= 5.05f && positionH1.x >= 5.05f && positionH2.x >= 5.05f) {
-//			position.x = -5.05f;
-//		} else if (position.x <= -5.05f && positionH1.x <= -5.05f && positionH2.x <= -5.05f) {
-//			position.x = 5.05f;
-//		}
-//
-//		if (position.y >= 5.05f && positionH1.y >= 5.05f && positionH2.y >= 5.05f) {
-//			position.y = -5.05f;
-//		} else if (position.y <= -5.05f && positionH1.y <= -5.05f && positionH2.y <= -5.05f) {
-//			position.y = 5.05f;
-//		}
-//
-//		if (position.z >= 5.05f && positionH1.z >= 5.05f && positionH2.z >= 5.05f) {
-//			position.z = -5.05f;
-//		} else if (position.z <= -5.05f && positionH1.z <= -5.05f && positionH2.z <= -5.05f) {
-//			position.z = 5.05f;
-//		}
-//
-//		this.transform.position = new Vector3 (position.x, position.y, position.z);
-//	}
+	void periodicBoundary ()
+	{
+		this.position = this.transform.position;
+		Vector3 positionH1 = this.transform.GetChild(0).position;
+		Vector3 positionH2 = this.transform.GetChild(1).position;
+		if (position.x >= 5.05f && positionH1.x >= 5.05f && positionH2.x >= 5.05f) {
+			position.x = -5.05f;
+		} else if (position.x <= -5.05f && positionH1.x <= -5.05f && positionH2.x <= -5.05f) {
+			position.x = 5.05f;
+		}
+
+		if (position.y >= 5.05f && positionH1.y >= 5.05f && positionH2.y >= 5.05f) {
+			position.y = -5.05f;
+		} else if (position.y <= -5.05f && positionH1.y <= -5.05f && positionH2.y <= -5.05f) {
+			position.y = 5.05f;
+		}
+
+		if (position.z >= 5.05f && positionH1.z >= 5.05f && positionH2.z >= 5.05f) {
+			position.z = -5.05f;
+		} else if (position.z <= -5.05f && positionH1.z <= -5.05f && positionH2.z <= -5.05f) {
+			position.z = 5.05f;
+		}
+
+		this.transform.position = new Vector3 (position.x, position.y, position.z);
+	}
 }
