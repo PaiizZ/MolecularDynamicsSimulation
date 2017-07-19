@@ -22,10 +22,13 @@ public class OxygenScript : MonoBehaviour
 	private float calculateValue;
 	private float scalar;
 	private float velocity;
+	private float time;
+
 	private Vector3 position;
 	private Vector3 randomVector;
 	private Vector3 velocityVector;
 	public Vector3 momentumVector;
+	private Vector3 forceVector;
 	//arttributes of partner
 	private Vector3 partnerHydrogen1;
 	private Vector3 partnerHydrogen2;
@@ -45,8 +48,11 @@ public class OxygenScript : MonoBehaviour
 	Vector3 posH2;
 	Vector3 posOH1;
 	Vector3 posOH2;
-
+	public Vector3 forceH1;
+	public Vector3 forceH2;
+	Vector3 forceO;
 	float enegy;
+
 //	public static GameController getInstance ()
 //	{
 //		return GameObject.Find ("GameController").GetComponent<GameController> ();
@@ -99,6 +105,12 @@ public class OxygenScript : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
+		this.time = Time.deltaTime * Mathf.Pow (10, -12);
+		momentumVector = momentumVector + (0.5f * time * forceVector);
+		springForce ();
+		forceVector = forceO;
+		momentumVector = momentumVector + (0.5f * time * forceVector);
+		rb.velocity = momentumVector;
 		periodicBoundary();
 		//this.transform.Translate (momentumVector*Time.deltaTime);
 	}
@@ -125,12 +137,12 @@ public class OxygenScript : MonoBehaviour
 //		Debug.Log ("Mathf.Asin(angle) : " + Mathf.Asin(angle));
 //		Debug.Log ("1/(scalarOH1*scalarOH2) : " + 1/(scalarOH1*scalarOH2));
 //		Debug.Log (": " + (posOH2 - posOH1*((scalarOH1*scalarOH2)/Mathf.Pow(scalarOH1,2))));
-		Vector3 forceH1 =  enegy/Mathf.Sin(angle) * 1/(scalarOH1*scalarOH2) * (posOH2 - posOH1*((scalarOH1*scalarOH2)/Mathf.Pow(scalarOH1,2)));
-		Debug.Log ("force1 x:" + forceH1.x + " y:" + forceH1.y + " z:" + forceH1.z);
-		Vector3 forceH2 =  enegy/Mathf.Sin(angle) * 1/(scalarOH1*scalarOH2) * (posOH1 - posOH2*((scalarOH1*scalarOH2)/Mathf.Pow(scalarOH2,2)));
+		forceH1 =  enegy/Mathf.Sin(angle) * 1/(scalarOH1*scalarOH2) * (posOH2 - posOH1*((scalarOH1*scalarOH2)/Mathf.Pow(scalarOH1,2)));
+//		Debug.Log ("force1 x:" + forceH1.x + " y:" + forceH1.y + " z:" + forceH1.z);
+		forceH2 =  enegy/Mathf.Sin(angle) * 1/(scalarOH1*scalarOH2) * (posOH1 - posOH2*((scalarOH1*scalarOH2)/Mathf.Pow(scalarOH2,2)));
 //		Debug.Log ("force2 " + forceOH2);
-		Vector3 forceO = - forceH1 - forceH2;
-		rb.AddForce(forceO);
+		forceO = - forceH1 - forceH2;
+		//rb.AddForce(forceO);
 		this.transform.GetChild (0).gameObject.GetComponent<Rigidbody> ().AddForce (forceH1);
 		this.transform.GetChild (1).gameObject.GetComponent<Rigidbody> ().AddForce (forceH2);
 	}
@@ -142,7 +154,7 @@ public class OxygenScript : MonoBehaviour
 		springJoint1.connectedBody = this.transform.GetChild (0).gameObject.GetComponent<Rigidbody> ();
 		springJoint1.anchor = new Vector3 (0, 0, 0);
 		springJoint1.connectedAnchor = new Vector3 (0, 0, 0);
-		springJoint1.spring = 10;
+		springJoint1.spring = 500;
 		springJoint1.minDistance = 0.0f;
 		springJoint1.maxDistance = 0.0f;
 		springJoint1.tolerance = 0.025f;
@@ -156,7 +168,7 @@ public class OxygenScript : MonoBehaviour
 		springJoint2.connectedBody = this.transform.GetChild (1).gameObject.GetComponent<Rigidbody> ();
 		springJoint2.anchor = new Vector3 (0, 0, 0);
 		springJoint2.connectedAnchor = new Vector3 (0, 0, 0);
-		springJoint2.spring = 10;
+		springJoint2.spring = 500;
 		springJoint2.minDistance = 0.0f;
 		springJoint2.maxDistance = 0.0f;
 		springJoint2.tolerance = 0.025f;

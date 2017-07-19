@@ -22,11 +22,13 @@ public class HydrogenScript : MonoBehaviour
 	private float calculateValue;
 	private float scalar;
 	private float velocity;
+	private float time;
 	//private Vector3 unitVector;
 	private Vector3 randomVector;
 	private Vector3 velocityVector;
 	public Vector3 momentumVector;
 	private Vector3 position;
+	private Vector3 forceVector;
 
 	SpringJoint spring;
 
@@ -47,15 +49,14 @@ public class HydrogenScript : MonoBehaviour
 
 		scalar = Mathf.Sqrt (calculateValue);
 
-		//unitVector = (1 / scalar) * randomVector;
-
 		velocity = Mathf.Sqrt ((3 * R * T) / (massArgon * calculateValue));
 
 		velocityVector = velocity * randomVector;
 
 		momentumVector = massArgon * velocityVector;
 
-		//conectMolecule ();
+		conectMolecule ();
+
 		rb.velocity = momentumVector;
 
 	}
@@ -63,29 +64,27 @@ public class HydrogenScript : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
-		//periodicBoundary();
-		//this.transform.Translate (momentumVector*Time.deltaTime);
+		this.time = Time.deltaTime * Mathf.Pow (10, -12);
+		if (this.transform.parent.GetChild (1).position.x != this.transform.position.x) {
+			momentumVector = momentumVector + (0.5f * time * forceVector);
+			forceVector = this.transform.parent.gameObject.GetComponent<OxygenScript> ().forceH1;
+			momentumVector = momentumVector + (0.5f * time * forceVector);
+			rb.velocity = momentumVector;
+		}
+		else if (this.transform.parent.GetChild (0).position.x != this.transform.position.x) {
+			momentumVector = momentumVector + (0.5f * time * forceVector);
+			forceVector = this.transform.parent.gameObject.GetComponent<OxygenScript> ().forceH2;
+			momentumVector = momentumVector + (0.5f * time * forceVector);
+			rb.velocity = momentumVector;
+		}
 	}
 
 	void conectMolecule ()
 	{
-		if (this.transform.parent.GetChild (2).position.x != this.transform.position.x) {
-			// chemical bond formation suddenly pulls slightly closer together
-//			float deltaX = this.transform.parent.GetChild (2).position.x - this.transform.position.x;
-//			float deltaY = this.transform.parent.GetChild (2).position.y - this.transform.position.y;
-//			float deltaZ = this.transform.parent.GetChild (2).position.z - this.transform.position.z;
-//			this.transform.position = new Vector3 (
-//				this.transform.position.x + 0.25f * deltaX,
-//				this.transform.position.y + 0.25f * deltaY,
-//				this.transform.position.z + 0.25f * deltaZ);
-//				this.transform.parent.GetChild (2).position = new Vector3 (
-//				this.transform.parent.GetChild (2).position.x - 0.25f * deltaX,
-//				this.transform.parent.GetChild (2).position.y - 0.25f * deltaY,
-//				this.transform.parent.GetChild (2).position.z - 0.25f * deltaZ);
-
+		if (this.transform.parent.GetChild (1).position.x != this.transform.position.x) {
 			// create SpringJoint to implement covalent bond between these two atoms
 			spring = this.gameObject.AddComponent<SpringJoint> ();
-			spring.connectedBody = this.transform.parent.GetChild (2).gameObject.GetComponent<Rigidbody> ();
+			spring.connectedBody = this.transform.parent.GetChild (1).gameObject.GetComponent<Rigidbody> ();
 			spring.anchor = new Vector3 (0, 0, 0);
 			spring.connectedAnchor = new Vector3 (0, 0, 0);
 			spring.spring = 10;
@@ -96,34 +95,6 @@ public class HydrogenScript : MonoBehaviour
 			spring.breakTorque = Mathf.Infinity;
 			spring.enableCollision = false;
 			spring.enablePreprocessing = true;
-		} 
-//		else if (this.transform.parent.GetChild (1).position.x != this.transform.position.x) {
-//			// chemical bond formation suddenly pulls slightly closer together
-////			float deltaX = this.transform.parent.GetChild (1).position.x - this.transform.position.x;
-////			float deltaY = this.transform.parent.GetChild (1).position.y - this.transform.position.y;
-////			float deltaZ = this.transform.parent.GetChild (1).position.z - this.transform.position.z;
-////			this.transform.position = new Vector3 (
-////				this.transform.position.x + 0.25f * deltaX,
-////				this.transform.position.y + 0.25f * deltaY,
-////				this.transform.position.z + 0.25f * deltaZ);
-////			this.transform.parent.GetChild (2).position = new Vector3 (
-////				this.transform.parent.GetChild (2).position.x - 0.25f * deltaX,
-////				this.transform.parent.GetChild (2).position.y - 0.25f * deltaY,
-////				this.transform.parent.GetChild (2).position.z - 0.25f * deltaZ);
-//
-//			// create SpringJoint to implement covalent bond between these two atoms
-//			spring = this.gameObject.AddComponent<SpringJoint> ();
-//			spring.connectedBody = this.transform.parent.GetChild (1).gameObject.GetComponent<Rigidbody> ();
-//			spring.anchor = new Vector3 (0, 0, 0);
-//			spring.connectedAnchor = new Vector3 (0, 0, 0);
-//			spring.spring = 10;
-//			spring.minDistance = 0;
-//			spring.maxDistance = 0;
-//			spring.tolerance = 0.025f;
-//			spring.breakForce = Mathf.Infinity;
-//			spring.breakTorque = Mathf.Infinity;
-//			spring.enableCollision = false;
-//			spring.enablePreprocessing = true;
-//		}
+		}
 	}
 }
