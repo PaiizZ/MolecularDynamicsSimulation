@@ -20,7 +20,7 @@ public class OxygenScript : MonoBehaviour
 	private float beta;
 	private float gamma;
 	private float calculateValue;
-	private float scalar;
+	//	private float scalar;
 	private float velocity;
 	private float time;
 
@@ -30,22 +30,32 @@ public class OxygenScript : MonoBehaviour
 	public Vector3 momentumVector;
 	private Vector3 forceVector;
 	//L
-	private float wellDepth = 0.128f;
+	private Vector3 tempObjectPosition;
+	private Transform otherTransformObj;
+	private Vector3[] forceFromObj;
+	private int numberOfMolecule;
+	private float wellDepth = 0.118f;
 	//constant well depth of argon (KJ/mol)
-	private float diameter = 3.42f;
+	private float diameter = 3.58f;
 	//constant diameter of argon (Angstrom)
+	private float maxDistance = 3f;
+
+	// attributes for show value on sence
+	public Vector3 objForce;
+	public Vector3 objPosition;
+	public string objName;
 	
 	//arttributes of partner
 	private Vector3 partnerHydrogen1;
 	private Vector3 partnerHydrogen2;
-	private float lengthO_H = .1f;
-	private float lengthH_H = .1633f;
+	private float lengthO_H = 0.1f;
+	private float lengthH_H = 0.1633f;
 
 	SpringJoint springJoint1;
 	SpringJoint springJoint2;
 
 	public HydrogenScript hydrogenPerfab;
-	public List<HydrogenScript> hydrogens = new List<HydrogenScript>();
+	public List<HydrogenScript> hydrogens = new List<HydrogenScript> ();
 
 	
 	//spring force
@@ -59,10 +69,10 @@ public class OxygenScript : MonoBehaviour
 	Vector3 forceO;
 	float enegy;
 
-//	public static GameController getInstance ()
-//	{
-//		return GameObject.Find ("GameController").GetComponent<GameController> ();
-//	}
+	//	public static GameController getInstance ()
+	//	{
+	//		return GameObject.Find ("GameController").GetComponent<GameController> ();
+	//	}
 	
 	// Use this for initialization
 	void Start ()
@@ -72,6 +82,14 @@ public class OxygenScript : MonoBehaviour
 		rb = GetComponent<Rigidbody> ();
 
 		position = this.transform.position;
+
+		this.numberOfMolecule = gameController.getNumberOxygen ();
+
+		this.objForce = new Vector3 ();
+
+		this.forceFromObj = new Vector3[this.numberOfMolecule + 1];
+
+//		this.clickOn = false;
 
 		// initialization partner of oxygen
 		initialMolecule ();
@@ -84,7 +102,7 @@ public class OxygenScript : MonoBehaviour
 
 		calculateValue = Mathf.Pow (alpha, 2) + Mathf.Pow (beta, 2) + Mathf.Pow (gamma, 2);
 
-		scalar = Mathf.Sqrt (calculateValue);
+//		scalar = Mathf.Sqrt (calculateValue);
 
 		//unitVector = (1 / scalar) * randomVector;
 
@@ -101,8 +119,8 @@ public class OxygenScript : MonoBehaviour
 
 	void initialMolecule ()
 	{
-		hydrogens.Add (Instantiate (hydrogenPerfab, new Vector3 (position.x - 0.1633f / 2f, position.y - Mathf.Sqrt (0.1f * 0.1f - Mathf.Pow (0.1633f / 2f, 2f)), position.z), Quaternion.identity));
-		hydrogens.Add (Instantiate (hydrogenPerfab, new Vector3 (position.x + 0.1633f / 2f, position.y - Mathf.Sqrt (0.1f * 0.1f - Mathf.Pow (0.1633f / 2f, 2f)), position.z), Quaternion.identity));
+		hydrogens.Add (Instantiate (hydrogenPerfab, new Vector3 (position.x - lengthH_H / 2f, position.y - Mathf.Sqrt (Mathf.Pow (lengthO_H, 2) - Mathf.Pow (lengthH_H / 2, 2)), position.z), Quaternion.identity));
+		hydrogens.Add (Instantiate (hydrogenPerfab, new Vector3 (position.x + lengthH_H / 2f, position.y - Mathf.Sqrt (Mathf.Pow (lengthO_H, 2) - Mathf.Pow (lengthH_H / 2, 2)), position.z), Quaternion.identity));
 		foreach (HydrogenScript h in hydrogens) {
 			h.transform.SetParent (this.transform);
 		}
@@ -117,11 +135,11 @@ public class OxygenScript : MonoBehaviour
 		forceVector = forceO;
 		momentumVector = momentumVector + (0.5f * time * forceVector);
 		rb.velocity = momentumVector;
-		periodicBoundary();
+		periodicBoundary ();
 		//this.transform.Translate (momentumVector*Time.deltaTime);
 	}
-	
-	public void calculationcForce (float time)
+
+	public void VDW (float time)
 	{
 		for (int i = 0; i < this.numberOfMolecule; i++) {
 			this.otherTransformObj = gameController.transform.GetChild (i);
@@ -131,24 +149,24 @@ public class OxygenScript : MonoBehaviour
 			if (position.x != tempPosition.x && position.y != tempPosition.y && position.z != tempPosition.z) {
 
 				float distance = (Mathf.Sqrt (Mathf.Pow ((tempPosition.x - position.x), 2) + Mathf.Pow ((tempPosition.y - position.y), 2) + Mathf.Pow ((tempPosition.z - position.z), 2)));
-				Vector3 temp = new Vector3 (distance, distance, distance) + (time * this.momentumVector / massArgon);
-				float scalarDistance = (Mathf.Sqrt (Mathf.Pow ((temp.x), 2) + Mathf.Pow ((temp.y), 2) + Mathf.Pow ((temp.z), 2)));
+				//Vector3 temp = new Vector3 (distance, distance, distance) + (time * this.momentumVector / massArgon);
+//				float scalarDistance = (Mathf.Sqrt (Mathf.Pow ((distance.x), 2) + Mathf.Pow ((distance.y), 2) + Mathf.Pow ((distance.z), 2)));
 
 
 				float distance2 = (Mathf.Sqrt (Mathf.Pow ((tempPosition.x - tempObjectPosition.x), 2) + Mathf.Pow ((tempPosition.y - tempObjectPosition.y), 2) + Mathf.Pow ((tempPosition.z - tempObjectPosition.z), 2)));
-				Vector3 temp2 = new Vector3 (distance2, distance2, distance2) + (time * this.momentumVector / massArgon);
-				float scalarDistance2 = (Mathf.Sqrt (Mathf.Pow ((temp2.x), 2) + Mathf.Pow ((temp2.y), 2) + Mathf.Pow ((temp2.z), 2)));
+				//Vector3 temp2 = new Vector3 (distance2, distance2, distance2) + (time * this.momentumVector / massArgon);
+//				float scalarDistance2 = (Mathf.Sqrt (Mathf.Pow ((distance2.x), 2) + Mathf.Pow ((distance2.y), 2) + Mathf.Pow ((distance2.z), 2)));
 
-				if (scalarDistance <= maxDistance) {
-					float energy = 12 * 4 * wellDepth * Mathf.Pow (diameter, 12) * Mathf.Pow (scalarDistance, -14) - 6 * 4 * wellDepth * Mathf.Pow (diameter, 6) * Mathf.Pow (scalarDistance, -8);
+				if (distance <= maxDistance) {
+					float energy = 12 * 4 * wellDepth * Mathf.Pow (diameter, 12) * Mathf.Pow (distance, -14) - 6 * 4 * wellDepth * Mathf.Pow (diameter, 6) * Mathf.Pow (distance, -8);
 					Vector3 force = 0.5f * (-energy * (tempPosition - position) * time);
 					rb.AddForce (force);
 					this.delObjForce (forceFromObj [i]);
 					forceFromObj [i] = force;
 					this.addObjForce (forceFromObj [i]);
 					forceVector += force;
-				} else if (scalarDistance2 <= maxDistance) {
-					float energy = 12 * 4 * wellDepth * Mathf.Pow (diameter, 12) * Mathf.Pow (scalarDistance2, -14) - 6 * 4 * wellDepth * Mathf.Pow (diameter, 6) * Mathf.Pow (scalarDistance2, -8);
+				} else if (distance2 <= maxDistance) {
+					float energy = 12 * 4 * wellDepth * Mathf.Pow (diameter, 12) * Mathf.Pow (distance2, -14) - 6 * 4 * wellDepth * Mathf.Pow (diameter, 6) * Mathf.Pow (distance2, -8);
 					Vector3 force = 0.5f * (-energy * (tempPosition - tempObjectPosition) * time);
 					rb.AddForce (force);
 					this.delObjForce (forceFromObj [i]);
@@ -156,7 +174,7 @@ public class OxygenScript : MonoBehaviour
 					this.addObjForce (forceFromObj [i]);
 					forceVector += force;
 				} else {
-					float energy = 12 * 4 * wellDepth * Mathf.Pow (diameter, 12) * Mathf.Pow (scalarDistance, -14) - 6 * 4 * wellDepth * Mathf.Pow (diameter, 6) * Mathf.Pow (scalarDistance, -8);             
+					float energy = 12 * 4 * wellDepth * Mathf.Pow (diameter, 12) * Mathf.Pow (distance, -14) - 6 * 4 * wellDepth * Mathf.Pow (diameter, 6) * Mathf.Pow (distance, -8);             
 					Vector3 force = 0.5f * (energy * (tempPosition - position) * time);
 					rb.AddForce (force);
 					this.delObjForce (forceFromObj [i]);
@@ -165,44 +183,45 @@ public class OxygenScript : MonoBehaviour
 					forceVector += force;
 				}
 			} else {
-				this.objName = "Argon " + i;
+				this.objName = "Water " + i;
 				objPosition = position;
 			}
 		}
 	}
 
-	void springForce (){
+	void springForce ()
+	{
 		this.posO = this.position;
-		this.posH1 = this.transform.GetChild(0).position;
-		this.posH2 = this.transform.GetChild(1).position;
+		this.posH1 = this.transform.GetChild (0).position;
+		this.posH2 = this.transform.GetChild (1).position;
 		this.posOH1 = posH1 - posO;
 		this.posOH2 = posH2 - posO;
-		float angle0 = 1.9106f ;// (rad)
-		float K0 = 383f * Mathf.Pow(10,-3) ; // (KJ/mol/rad^2)
-		float scalarOH1 = Mathf.Sqrt(Mathf.Pow(posH1.x - posO.x,2)+Mathf.Pow(posH1.y - posO.y,2)+Mathf.Pow(posH1.z - posO.z,2));
+		float angle0 = 1.9106f;// (rad)
+		float K0 = 383f * Mathf.Pow (10, -3); // (KJ/mol/rad^2)
+		float scalarOH1 = Mathf.Sqrt (Mathf.Pow (posH1.x - posO.x, 2) + Mathf.Pow (posH1.y - posO.y, 2) + Mathf.Pow (posH1.z - posO.z, 2));
 		//Debug.Log ("scalarOH1 " + scalarOH1);
-		float scalarOH2 = Mathf.Sqrt(Mathf.Pow(posH2.x - posO.x,2)+Mathf.Pow(posH2.y - posO.y,2)+Mathf.Pow(posH2.z - posO.z,2));
+		float scalarOH2 = Mathf.Sqrt (Mathf.Pow (posH2.x - posO.x, 2) + Mathf.Pow (posH2.y - posO.y, 2) + Mathf.Pow (posH2.z - posO.z, 2));
 		//Debug.Log ("scalarOH2 " + scalarOH2);
-		float OH1OH2 = (posH1.x-posO.x)*(posH2.x-posO.x)+(posH1.y-posO.y)*(posH2.y-posO.y)+(posH1.z-posO.z)*(posH2.z-posO.z); // (posH1 * posOH2)
+		float OH1OH2 = (posH1.x - posO.x) * (posH2.x - posO.x) + (posH1.y - posO.y) * (posH2.y - posO.y) + (posH1.z - posO.z) * (posH2.z - posO.z); // (posH1 * posOH2)
 		//Debug.Log ("OH1OH2 " + OH1OH2);
-		float angle = Mathf.Acos(OH1OH2/(scalarOH1*scalarOH2)) ;// (rad)
+		float angle = Mathf.Acos (OH1OH2 / (scalarOH1 * scalarOH2));// (rad)
 //		Debug.Log ("angle " + angle);
-		this.enegy = K0 * (angle-angle0);
+		this.enegy = K0 * (angle - angle0);
 //		Debug.Log ("enegy " + enegy);
 //		Debug.Log ("Mathf.sin(angle) : " + 1/Mathf.Sin(angle));
 //		Debug.Log ("Mathf.Asin(angle) : " + Mathf.Asin(angle));
 //		Debug.Log ("1/(scalarOH1*scalarOH2) : " + 1/(scalarOH1*scalarOH2));
 //		Debug.Log (": " + (posOH2 - posOH1*((scalarOH1*scalarOH2)/Mathf.Pow(scalarOH1,2))));
-		forceH1 =  enegy/Mathf.Sin(angle) * 1/(scalarOH1*scalarOH2) * (posOH2 - posOH1*((scalarOH1*scalarOH2)/Mathf.Pow(scalarOH1,2)));
+		forceH1 = enegy / Mathf.Sin (angle) * 1 / (scalarOH1 * scalarOH2) * (posOH2 - posOH1 * ((scalarOH1 * scalarOH2) / Mathf.Pow (scalarOH1, 2)));
 //		Debug.Log ("force1 x:" + forceH1.x + " y:" + forceH1.y + " z:" + forceH1.z);
-		forceH2 =  enegy/Mathf.Sin(angle) * 1/(scalarOH1*scalarOH2) * (posOH1 - posOH2*((scalarOH1*scalarOH2)/Mathf.Pow(scalarOH2,2)));
+		forceH2 = enegy / Mathf.Sin (angle) * 1 / (scalarOH1 * scalarOH2) * (posOH1 - posOH2 * ((scalarOH1 * scalarOH2) / Mathf.Pow (scalarOH2, 2)));
 //		Debug.Log ("force2 " + forceOH2);
-		forceO = - forceH1 - forceH2;
-		rb.AddForce(forceO);
+		forceO = -forceH1 - forceH2;
+		rb.AddForce (forceO);
 		this.transform.GetChild (0).gameObject.GetComponent<Rigidbody> ().AddForce (forceH1);
 		this.transform.GetChild (1).gameObject.GetComponent<Rigidbody> ().AddForce (forceH2);
 	}
-	
+
 	void conectHydrogenMolecule ()
 	{
 		// create SpringJoint to implement covalent bond between these two atoms
@@ -239,8 +258,8 @@ public class OxygenScript : MonoBehaviour
 	void periodicBoundary ()
 	{
 		this.position = this.transform.position;
-		Vector3 positionH1 = this.transform.GetChild(0).position;
-		Vector3 positionH2 = this.transform.GetChild(1).position;
+		Vector3 positionH1 = this.transform.GetChild (0).position;
+		Vector3 positionH2 = this.transform.GetChild (1).position;
 		if (position.x >= 5.05f && positionH1.x >= 5.05f && positionH2.x >= 5.05f) {
 			position.x = -5.05f;
 		} else if (position.x <= -5.05f && positionH1.x <= -5.05f && positionH2.x <= -5.05f) {
@@ -260,5 +279,41 @@ public class OxygenScript : MonoBehaviour
 		}
 
 		this.transform.position = new Vector3 (position.x, position.y, position.z);
+	}
+
+	//Delete force from object molecule
+	void delObjForce (Vector3 force)
+	{
+		this.objForce -= force;
+	}
+
+	//Add force to object molecule
+	void addObjForce (Vector3 force)
+	{
+		this.objForce += force;
+	}
+
+	//Set position to temp object
+	void setTempPosition ()
+	{
+		//Set tmep object position equals this object position 
+		this.tempObjectPosition = this.transform.position;
+		if (this.tempObjectPosition.x == Mathf.Abs (this.tempObjectPosition.x)) {
+			this.tempObjectPosition.x -= 10;
+		} else {
+			this.tempObjectPosition.x += 10;
+		}
+
+		if (this.tempObjectPosition.y == Mathf.Abs (this.tempObjectPosition.y)) {
+			this.tempObjectPosition.y -= 10;
+		} else {
+			this.tempObjectPosition.y += 10;
+		}
+
+		if (this.tempObjectPosition.z == Mathf.Abs (this.tempObjectPosition.z)) {
+			this.tempObjectPosition.z -= 10;
+		} else {
+			this.tempObjectPosition.z += 10;
+		}
 	}
 }

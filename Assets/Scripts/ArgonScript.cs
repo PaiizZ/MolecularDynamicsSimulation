@@ -20,7 +20,7 @@ public class ArgonScript : MonoBehaviour
 	private float beta;
 	private float gamma;
 	private float calculateValue;
-	private float scalar;
+	//	private float scalar;
 	private float velocity;
 	//private Vector3 unitVector;
 	private Vector3 randomVector;
@@ -73,7 +73,7 @@ public class ArgonScript : MonoBehaviour
 
 		calculateValue = Mathf.Pow (alpha, 2) + Mathf.Pow (beta, 2) + Mathf.Pow (gamma, 2);
       
-		scalar = Mathf.Sqrt (calculateValue);
+//		scalar = Mathf.Sqrt (calculateValue);
         
 		//unitVector = (1 / scalar) * randomVector;
         

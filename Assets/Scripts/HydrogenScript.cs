@@ -7,7 +7,7 @@ public class HydrogenScript : MonoBehaviour
 	//Physical of molecule
 	public Rigidbody rb;
 	//Controller every molecules
-	private GameController gameController;
+	//	private GameController gameController;
 	// molar gas constant ( KJ/mol )
 	private float R = 8.31447f * Mathf.Pow (10, -3);
 	// temperature in kelvins (25+273)
@@ -20,7 +20,7 @@ public class HydrogenScript : MonoBehaviour
 	private float beta;
 	private float gamma;
 	private float calculateValue;
-	private float scalar;
+	//	private float scalar;
 	private float velocity;
 	private float time;
 	//private Vector3 unitVector;
@@ -35,7 +35,7 @@ public class HydrogenScript : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
-		gameController = GameController.getInstance ();
+//		gameController = GameController.getInstance ();
 
 		rb = GetComponent<Rigidbody> ();
 
@@ -47,7 +47,7 @@ public class HydrogenScript : MonoBehaviour
 
 		calculateValue = Mathf.Pow (alpha, 2) + Mathf.Pow (beta, 2) + Mathf.Pow (gamma, 2);
 
-		scalar = Mathf.Sqrt (calculateValue);
+//		scalar = Mathf.Sqrt (calculateValue);
 
 		velocity = Mathf.Sqrt ((3 * R * T) / (massArgon * calculateValue));
 
@@ -70,8 +70,7 @@ public class HydrogenScript : MonoBehaviour
 			forceVector = this.transform.parent.gameObject.GetComponent<OxygenScript> ().forceH1;
 			momentumVector = momentumVector + (0.5f * time * forceVector);
 			rb.velocity = momentumVector;
-		}
-		else if (this.transform.parent.GetChild (0).position.x != this.transform.position.x) {
+		} else if (this.transform.parent.GetChild (0).position.x != this.transform.position.x) {
 			momentumVector = momentumVector + (0.5f * time * forceVector);
 			forceVector = this.transform.parent.gameObject.GetComponent<OxygenScript> ().forceH2;
 			momentumVector = momentumVector + (0.5f * time * forceVector);
