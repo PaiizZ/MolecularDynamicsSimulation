@@ -94,7 +94,7 @@ public class ArgonScript : MonoBehaviour
 		momentumVector = momentumVector + (0.5f * time * forceVector);
 		calculationcForce (time);
 		momentumVector = momentumVector + (0.5f * time * forceVector);
-		forceVector = Vector3.zero;
+		//forceVector = Vector3.zero;
 		periodicBoundary ();
 		if (rb.velocity.sqrMagnitude > this.sqrMaxVelocity) {
 			Debug.Log (" rb.velocity.velocity1 " + rb.velocity.x + " y " + rb.velocity.y + " z " + rb.velocity.z);

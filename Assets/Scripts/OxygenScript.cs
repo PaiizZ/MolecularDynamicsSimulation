@@ -35,7 +35,8 @@ public class OxygenScript : MonoBehaviour
 	SpringJoint springJoint1;
 	SpringJoint springJoint2;
 
-	// public List<HydrogenScript> hydrogens = new List<HydrogenScript>();
+	public HydrogenScript hydrogenPerfab;
+	public List<HydrogenScript> hydrogens = new List<HydrogenScript>();
 
 	// Use this for initialization
 	void Start ()
@@ -43,6 +44,10 @@ public class OxygenScript : MonoBehaviour
 		gameController = GameController.getInstance ();
 
 		rb = GetComponent<Rigidbody> ();
+
+		position = this.transform.position;
+
+		initialMolecule ();
 
 		alpha = Random.Range (-3.0f, 3.0f);
 		beta = Random.Range (-3.0f, 3.0f);
@@ -65,7 +70,7 @@ public class OxygenScript : MonoBehaviour
 
 
 		// initialization partner of oxygen
-		position = this.transform.position;
+
         //hydrogens.Add(Instantiate(partnerHydrogen1, new Vector3(position.x - lengthH_H / 2, position.y - Mathf.Sqrt(Mathf.Pow(lengthO_H, 2) - Mathf.Pow(lengthH_H / 2, 2)), this.transform.position.z), Quaternion.identity));
         //hydrogens.Add(Instantiate(partnerHydrogen2, new Vector3(position.x + lengthH_H / 2, position.y - Mathf.Sqrt(Mathf.Pow(lengthO_H, 2) - Mathf.Pow(lengthH_H / 2, 2)), this.transform.position.z), Quaternion.identity));
 
@@ -79,10 +84,20 @@ public class OxygenScript : MonoBehaviour
 		//rb.velocity = new Vector3(5f,5f,5f);
 	}
 
+	void initialMolecule ()
+	{
+		hydrogens.Add (Instantiate (hydrogenPerfab, new Vector3 (position.x - 0.1633f / 2f, position.y - Mathf.Sqrt (0.1f * 0.1f - Mathf.Pow (0.1633f / 2f, 2f)), position.z), Quaternion.identity));
+		hydrogens.Add (Instantiate (hydrogenPerfab, new Vector3 (position.x + 0.1633f / 2f, position.y - Mathf.Sqrt (0.1f * 0.1f - Mathf.Pow (0.1633f / 2f, 2f)), position.z), Quaternion.identity));
+		foreach (HydrogenScript h in hydrogens) {
+			h.transform.SetParent (this.transform);
+		}
+	}
+
 	// Update is called once per frame
 	void Update ()
 	{
 		//periodicBoundary();
+		//this.transform.Translate (momentumVector*Time.deltaTime);
 	}
 
 	void conectHydrogenMolecule ()
@@ -103,7 +118,7 @@ public class OxygenScript : MonoBehaviour
 
 		// create SpringJoint to implement covalent bond between these two atoms
 		springJoint1 = this.gameObject.AddComponent<SpringJoint> ();
-		springJoint1.connectedBody = this.transform.parent.GetChild (1).gameObject.GetComponent<Rigidbody> ();
+		springJoint1.connectedBody = this.transform.GetChild (0).gameObject.GetComponent<Rigidbody> ();
 		springJoint1.anchor = new Vector3 (0, 0, 0);
 		springJoint1.connectedAnchor = new Vector3 (0, 0, 0);
 		springJoint1.spring = 10;
@@ -131,7 +146,7 @@ public class OxygenScript : MonoBehaviour
 
 		// create SpringJoint to implement covalent bond between these two atoms
 		springJoint2 = this.gameObject.AddComponent<SpringJoint> ();
-		springJoint2.connectedBody = this.transform.parent.GetChild (2).gameObject.GetComponent<Rigidbody> ();
+		springJoint2.connectedBody = this.transform.GetChild (1).gameObject.GetComponent<Rigidbody> ();
 		springJoint2.anchor = new Vector3 (0, 0, 0);
 		springJoint2.connectedAnchor = new Vector3 (0, 0, 0);
 		springJoint2.spring = 10;

@@ -55,7 +55,7 @@ public class HydrogenScript : MonoBehaviour
 
 		momentumVector = massArgon * velocityVector;
 
-		conectMolecule ();
+		//conectMolecule ();
 		rb.velocity = momentumVector;
 
 	}
@@ -64,6 +64,7 @@ public class HydrogenScript : MonoBehaviour
 	void Update ()
 	{
 		//periodicBoundary();
+		//this.transform.Translate (momentumVector*Time.deltaTime);
 	}
 
 	void conectMolecule ()
