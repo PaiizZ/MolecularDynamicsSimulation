@@ -13,17 +13,15 @@ public class HydrogenScript : MonoBehaviour
 	// temperature in kelvins (25+273)
 	public float T = 298f;
 	// mass of molecule argon
-	private float massArgon = 1.00794f * Mathf.Pow (10, -3);
-	// ( Kg / molecule )
+	private float massHydrogen = 1.00794f * Mathf.Pow (10, -3); // ( Kg / molecule )
+
 	// attributes
 	private float alpha;
 	private float beta;
 	private float gamma;
 	private float calculateValue;
-	//	private float scalar;
 	private float velocity;
 	private float time;
-	//private Vector3 unitVector;
 	private Vector3 randomVector;
 	private Vector3 velocityVector;
 	public Vector3 momentumVector;
@@ -31,6 +29,7 @@ public class HydrogenScript : MonoBehaviour
 	private Vector3 forceVector;
 	private int numberOfWater;
 
+	// attributes spring
 	SpringJoint spring;
 
 	// Use this for initialization
@@ -50,18 +49,13 @@ public class HydrogenScript : MonoBehaviour
 
 		calculateValue = Mathf.Pow (alpha, 2) + Mathf.Pow (beta, 2) + Mathf.Pow (gamma, 2);
 
-//		scalar = Mathf.Sqrt (calculateValue);
-
-		velocity = Mathf.Sqrt ((3 * R * T) / (massArgon * calculateValue));
+		velocity = Mathf.Sqrt ((3 * R * T) / (massHydrogen * calculateValue));
 
 		velocityVector = velocity * randomVector;
 
-		momentumVector = massArgon * velocityVector;
+		momentumVector = massHydrogen * velocityVector;
 
 		conectMolecule ();
-
-		//rb.velocity = momentumVector;
-
 	}
 
 	// Update is called once per frame
@@ -82,21 +76,23 @@ public class HydrogenScript : MonoBehaviour
 		electrostatic ();
 	}
 
-	void electrostatic(){
+	//calculate an electrostatic force every pair
+	void electrostatic ()
+	{
 		float Kspring = 9 * Mathf.Pow (10, 15); // (KJnm/c^2)
-		float elementaryCharge = 1.602f * Mathf.Pow (10,-19);// c
+		float elementaryCharge = 1.602f * Mathf.Pow (10, -19); // c
 		float electricChargeOxygen = -0.82f * elementaryCharge; // c
 		float electricChargeHydrogen = 0.41f * elementaryCharge; // c
-		float numberHydrogeninWater = 2 ;
+		float numberHydrogeninWater = 2;
 		List<Vector3> posAtoms = new List<Vector3> ();
-		Vector3 position = this.transform.position ; 
-		for(int i = 0 ; i < numberOfWater ; i ++){
+		Vector3 position = this.transform.position; 
+		for (int i = 0; i < numberOfWater; i++) {
 			Transform transformChild = this.transform.parent.parent.GetChild (i);
 
-			if(position != transformChild.position){
+			if (position != transformChild.position) {
 				posAtoms.Add (transformChild.position);
 			}
-			for(int j = 0 ; j < numberHydrogeninWater  ; j ++){
+			for (int j = 0; j < numberHydrogeninWater; j++) {
 				if (position != transformChild.GetChild (j).position) {
 					posAtoms.Add (transformChild.GetChild (j).position);
 				}
@@ -105,12 +101,13 @@ public class HydrogenScript : MonoBehaviour
 
 		foreach (Vector3 tempPos in posAtoms) {
 			Vector3 unitVector = tempPos - position;
-			Vector3 springForce = ( (Kspring * electricChargeOxygen * electricChargeHydrogen) 
-				/ Mathf.Pow(Mathf.Pow(tempPos.x-position.x,2)+Mathf.Pow(tempPos.y-position.y,2)+Mathf.Pow(tempPos.z-position.z,2),1.5f) ) * unitVector;
+			Vector3 springForce = ((Kspring * electricChargeOxygen * electricChargeHydrogen)
+			                      / Mathf.Pow (Mathf.Pow (tempPos.x - position.x, 2) + Mathf.Pow (tempPos.y - position.y, 2) + Mathf.Pow (tempPos.z - position.z, 2), 1.5f)) * unitVector;
 			rb.AddForce (springForce);
 		}
 	}
 
+	// combine each hydrogen atom
 	void conectMolecule ()
 	{
 		if (this.transform.parent.GetChild (1).position.x != this.transform.position.x) {

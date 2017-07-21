@@ -7,29 +7,27 @@ public class ArgonScript : MonoBehaviour
 	//Physical of molecule
 	private Rigidbody rb;
 	//Controller every molecules
-	private GameController gameController;
+	private GameController gameController; 
 	// molar gas constant ( KJ/mol )
-	private float R = 8.31447f * Mathf.Pow (10, -3);
+	private float R = 8.31447f * Mathf.Pow (10, -3); 
 	// temperature in kelvins (25+273)
-	public float T = 298f;
+	public float T = 298f; 
 	// mass of molecule argon
-	private float massArgon = 39.948f * Mathf.Pow (10, -3);
-	// ( Kg / molecule )
+	private float massArgon = 39.948f * Mathf.Pow (10, -3); // ( Kg / molecule )
+
 	// attributes
 	private float alpha;
 	private float beta;
 	private float gamma;
 	private float calculateValue;
-	//	private float scalar;
 	private float velocity;
-	//private Vector3 unitVector;
 	private Vector3 randomVector;
 	private Vector3 velocityVector;
 	public Vector3 momentumVector;
 	private Vector3 forceVector;
 	private float maxDistance = 3f;
-	//attributes for set max velocity
-	private float sqrMaxVelocity;
+	private float sqrMaxVelocity; //attributes for set max velocity
+
 	// attributes for calculate force(Lennaed Jones potential)
 	private Vector3 positionVector;
 	private Vector3 tempObjectPosition;
@@ -37,14 +35,14 @@ public class ArgonScript : MonoBehaviour
 	private Vector3[] forceFromObj;
 	private int numberOfMolecule;
 	private float time;
-	private float wellDepth = 0.128f;
-	//constant well depth of argon (KJ/mol)
-	private float diameter = 3.42f;
-	//constant diameter of argon (Angstrom)
+	private float wellDepth = 0.128f; //constant well depth of argon (KJ/mol)
+	private float diameter = 3.42f; //constant diameter of argon (Angstrom)
+
 	// attributes for show value on sence
 	public Vector3 objForce;
 	public Vector3 objPosition;
 	public string objName;
+
 	// boolean to check, when mouse click molecule
 	public bool clickOn;
 
@@ -67,23 +65,18 @@ public class ArgonScript : MonoBehaviour
       
 		alpha = Random.Range (-5.0f, 5.0f);
 		beta = Random.Range (-5.0f, 5.0f);
-		gamma = Random.Range (-5.0f, 5.0f);;
+		gamma = Random.Range (-5.0f, 5.0f);
 
 		randomVector = new Vector3 (alpha, beta, gamma);
 
 		calculateValue = Mathf.Pow (alpha, 2) + Mathf.Pow (beta, 2) + Mathf.Pow (gamma, 2);
-      
-		//scalar = Mathf.Sqrt (calculateValue);
-        
-		//unitVector = (1 / scalar) * randomVector;
         
 		velocity = Mathf.Sqrt ((3 * R * T) / (massArgon * calculateValue));
       
 		velocityVector = velocity * randomVector;     
 
 		momentumVector = massArgon * velocityVector;      
-
-//		rb.velocity = momentumVector;      
+		    
 	}
 		
 	// Update is called once per frame

@@ -13,31 +13,28 @@ public class OxygenScript : MonoBehaviour
 	// temperature in kelvins (25+273)
 	public float T = 298f;
 	// mass of molecule argon
-	private float massArgon = 15.9994f * Mathf.Pow (10, -3);
-	// ( Kg / molecule )
+	private float massArgon = 15.9994f * Mathf.Pow (10, -3); // ( Kg / molecule )
+
 	// attributes
 	private float alpha;
 	private float beta;
 	private float gamma;
 	private float calculateValue;
-	//	private float scalar;
 	private float velocity;
 	private float time;
-
 	private Vector3 position;
 	private Vector3 randomVector;
 	private Vector3 velocityVector;
 	public Vector3 momentumVector;
 	private Vector3 forceVector;
-	//L
+
+	// attributes for calculate force(Lennaed Jones potential)
 	private Vector3 tempObjectPosition;
 	private Transform otherTransformObj;
 	private Vector3[] forceFromObj;
 	private int numberOfWater;
-	private float wellDepth = 0.118f;
-	//constant well depth of argon (KJ/mol)
-	private float diameter = 3.58f;
-	//constant diameter of argon (Angstrom)
+	private float wellDepth = 0.118f; //constant well depth of argon (KJ/mol)
+	private float diameter = 3.58f; //constant diameter of argon (Angstrom)
 	private float minDistance = 3f;
 
 	// attributes for show value on sence
@@ -49,14 +46,6 @@ public class OxygenScript : MonoBehaviour
 	private Vector3 partnerHydrogen1;
 	private Vector3 partnerHydrogen2;
 
-
-	SpringJoint springJoint1;
-	SpringJoint springJoint2;
-
-	public HydrogenScript hydrogenPerfab;
-	public List<HydrogenScript> hydrogens = new List<HydrogenScript> ();
-
-	
 	//spring force
 	Vector3 posO;
 	Vector3 posH1;
@@ -67,13 +56,12 @@ public class OxygenScript : MonoBehaviour
 	public Vector3 forceH2;
 	Vector3 forceO;
 	float enegy;
+	SpringJoint springJoint1;
+	SpringJoint springJoint2;
 
-	List<Vector3> posAtoms = new List<Vector3> ();
+	public HydrogenScript hydrogenPerfab;
+	public List<HydrogenScript> hydrogens = new List<HydrogenScript> ();
 
-	//	public static GameController getInstance ()
-	//	{
-	//		return GameObject.Find ("GameController").GetComponent<GameController> ();
-	//	}
 	
 	// Use this for initialization
 	void Start ()
@@ -90,9 +78,6 @@ public class OxygenScript : MonoBehaviour
 
 		this.forceFromObj = new Vector3[this.numberOfWater + 1];
 
-//		this.clickOn = false;
-
-		// initialization partner of oxygen
 		initialMolecule ();
 
 		alpha = Random.Range (-3.0f, 3.0f);
@@ -103,10 +88,6 @@ public class OxygenScript : MonoBehaviour
 
 		calculateValue = Mathf.Pow (alpha, 2) + Mathf.Pow (beta, 2) + Mathf.Pow (gamma, 2);
 
-//		scalar = Mathf.Sqrt (calculateValue);
-
-		//unitVector = (1 / scalar) * randomVector;
-
 		velocity = Mathf.Sqrt ((3 * R * T) / (massArgon * calculateValue));
 
 		velocityVector = velocity * randomVector;
@@ -114,15 +95,27 @@ public class OxygenScript : MonoBehaviour
 		momentumVector = massArgon * velocityVector;
 		
 		conectHydrogenMolecule ();
+	}
+		
+	// Update is called once per frame
+	void Update ()
+	{
+		this.time = Time.deltaTime * Mathf.Pow (10, -12);
+		momentumVector = momentumVector + (0.5f * time * forceVector);
+		springForce ();
+		forceVector = forceO;
+		momentumVector = momentumVector + (0.5f * time * forceVector);
+		rb.velocity = momentumVector;
+		vdwEquation ();
+		electrostatic ();
+		periodicBoundary ();
 
-
-		//rb.velocity = momentumVector;
-		//Debug.Log ("O  "+momentumVector.x + " " + momentumVector.y + " " + momentumVector.z);
 	}
 
+	// initialization partner of oxygen
 	void initialMolecule ()
 	{
-		
+
 		float lengthO_H = 0.1f;
 		float lengthH_H = 0.1633f;
 		Vector3 posO = this.position;
@@ -141,21 +134,7 @@ public class OxygenScript : MonoBehaviour
 		}
 	}
 
-	// Update is called once per frame
-	void Update ()
-	{
-		this.time = Time.deltaTime * Mathf.Pow (10, -12);
-		momentumVector = momentumVector + (0.5f * time * forceVector);
-		springForce ();
-		forceVector = forceO;
-		momentumVector = momentumVector + (0.5f * time * forceVector);
-		rb.velocity = momentumVector;
-		vdwEquation();
-		electrostatic ();
-		periodicBoundary ();
-
-	}
-
+	//calculate force by van-der-wan equation 
 	public void vdwEquation ()
 	{
 		for (int i = 0; i < this.numberOfWater; i++) {
@@ -201,6 +180,7 @@ public class OxygenScript : MonoBehaviour
 		}
 	}
 
+	// calculate force in spring between atom in molecule
 	void springForce ()
 	{
 		this.posO = this.position;
@@ -225,22 +205,23 @@ public class OxygenScript : MonoBehaviour
 		this.transform.GetChild (1).gameObject.GetComponent<Rigidbody> ().AddForce (forceH2);
 	}
 
-
-	void electrostatic(){
+	//calculate an electrostatic force every pair
+	void electrostatic ()
+	{
 		float Kspring = 9 * Mathf.Pow (10, 15); // (KJnm/c^2)
-		float elementaryCharge = 1.602f * Mathf.Pow (10,-19);// c
+		float elementaryCharge = 1.602f * Mathf.Pow (10, -19);// c
 		float electricChargeOxygen = -0.82f * elementaryCharge; // c
 		float electricChargeHydrogen = 0.41f * elementaryCharge; // c
-		float numberHydrogeninWater = 2 ;
+		float numberHydrogeninWater = 2;
 		List<Vector3> posAtoms = new List<Vector3> ();
-		Vector3 position = this.transform.position ; 
-		for(int i = 0 ; i < numberOfWater ; i ++){
+		Vector3 position = this.transform.position; 
+		for (int i = 0; i < numberOfWater; i++) {
 			Transform transformChild = this.transform.parent.GetChild (i);
 
-			if(position != transformChild.position){
+			if (position != transformChild.position) {
 				posAtoms.Add (transformChild.position);
 			}
-			for(int j = 0 ; j < numberHydrogeninWater  ; j ++){
+			for (int j = 0; j < numberHydrogeninWater; j++) {
 				if (position != transformChild.GetChild (j).position) {
 					posAtoms.Add (transformChild.GetChild (j).position);
 				}
@@ -249,13 +230,13 @@ public class OxygenScript : MonoBehaviour
 
 		foreach (Vector3 tempPos in posAtoms) {
 			Vector3 unitVector = tempPos - position;
-			Vector3 springForce = ( (Kspring * electricChargeOxygen * electricChargeHydrogen) 
-				/ Mathf.Pow(Mathf.Pow(tempPos.x-position.x,2)+Mathf.Pow(tempPos.y-position.y,2)+Mathf.Pow(tempPos.z-position.z,2),1.5f) ) * unitVector;
+			Vector3 springForce = ((Kspring * electricChargeOxygen * electricChargeHydrogen)
+			                      / Mathf.Pow (Mathf.Pow (tempPos.x - position.x, 2) + Mathf.Pow (tempPos.y - position.y, 2) + Mathf.Pow (tempPos.z - position.z, 2), 1.5f)) * unitVector;
 			rb.AddForce (springForce);
 		}
 	}
 
-
+	// combine between hydrogen atom
 	void conectHydrogenMolecule ()
 	{
 		// create SpringJoint to implement covalent bond between these two atoms

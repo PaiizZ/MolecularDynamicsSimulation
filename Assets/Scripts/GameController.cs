@@ -8,19 +8,22 @@ public class GameController : MonoBehaviour
 
 	//model of molecule that use to cloning
 	public ArgonScript argonPerfab;
-	//focus molecule about information
-	private ArgonScript argonFocus;
-	//List of molecules that created
+	//List of atoms that created
 	public List<ArgonScript> argons = new List<ArgonScript> ();
 	//another Text that show on Sence
 	public Text nameText, moentumText, forceText, tempText, positionText;
-	// private number of argon molecules
+	// private number of argon atoms
 	private int numberArgon = 10;
 
-
+	//model of molecule that use to cloning
 	public OxygenScript OxygenPerfab;
+	//List of molecules that created
 	public List<OxygenScript> oxygens = new List<OxygenScript> ();
+	// private number of water molecules
 	private int numberWater = 10;
+
+	//focus molecule about information
+	private ArgonScript argonFocus;
 
 	//Get GameCotroller for anthor script use
 	public static GameController getInstance ()
@@ -32,10 +35,10 @@ public class GameController : MonoBehaviour
 	void Start ()
 	{
 
-		for (int i = 0; i < numberWater ; i++) {
-		float randomPosX = Random.Range (-4.8f, 4.8f);
-		float randomPosY = Random.Range (-4.8f, 4.8f);
-		float randomPosZ = Random.Range (-4.8f, 4.8f);
+		for (int i = 0; i < numberWater; i++) {
+			float randomPosX = Random.Range (-4.8f, 4.8f);
+			float randomPosY = Random.Range (-4.8f, 4.8f);
+			float randomPosZ = Random.Range (-4.8f, 4.8f);
 			oxygens.Add (Instantiate (OxygenPerfab, new Vector3 (randomPosX, randomPosY, randomPosZ), Quaternion.identity));
 		}
 
