@@ -65,15 +65,15 @@ public class ArgonScript : MonoBehaviour
 
 		setMaxVelocity (8f);
       
-		alpha = Random.Range (-3.0f, 3.0f);
-		beta = Random.Range (-3.0f, 3.0f);
-		gamma = Random.Range (-3.0f, 3.0f);
+		alpha = Random.Range (-5.0f, 5.0f);
+		beta = Random.Range (-5.0f, 5.0f);
+		gamma = Random.Range (-5.0f, 5.0f);;
 
 		randomVector = new Vector3 (alpha, beta, gamma);
 
 		calculateValue = Mathf.Pow (alpha, 2) + Mathf.Pow (beta, 2) + Mathf.Pow (gamma, 2);
       
-//		scalar = Mathf.Sqrt (calculateValue);
+		//scalar = Mathf.Sqrt (calculateValue);
         
 		//unitVector = (1 / scalar) * randomVector;
         
@@ -83,7 +83,7 @@ public class ArgonScript : MonoBehaviour
 
 		momentumVector = massArgon * velocityVector;      
 
-		rb.velocity = momentumVector;      
+//		rb.velocity = momentumVector;      
 	}
 		
 	// Update is called once per frame
@@ -94,7 +94,7 @@ public class ArgonScript : MonoBehaviour
 		momentumVector = momentumVector + (0.5f * time * forceVector);
 		calculationcForce (time);
 		momentumVector = momentumVector + (0.5f * time * forceVector);
-		//forceVector = Vector3.zero;
+		rb.velocity = momentumVector; 
 		periodicBoundary ();
 		if (rb.velocity.sqrMagnitude > this.sqrMaxVelocity) {
 			Debug.Log (" rb.velocity.velocity1 " + rb.velocity.x + " y " + rb.velocity.y + " z " + rb.velocity.z);

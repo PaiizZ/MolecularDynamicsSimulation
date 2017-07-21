@@ -38,7 +38,7 @@ public class OxygenScript : MonoBehaviour
 	//constant well depth of argon (KJ/mol)
 	private float diameter = 3.58f;
 	//constant diameter of argon (Angstrom)
-	private float maxDistance = 3f;
+	private float minDistance = 3f;
 
 	// attributes for show value on sence
 	public Vector3 objForce;
@@ -48,8 +48,7 @@ public class OxygenScript : MonoBehaviour
 	//arttributes of partner
 	private Vector3 partnerHydrogen1;
 	private Vector3 partnerHydrogen2;
-	private float lengthO_H = 0.1f;
-	private float lengthH_H = 0.1633f;
+
 
 	SpringJoint springJoint1;
 	SpringJoint springJoint2;
@@ -119,8 +118,20 @@ public class OxygenScript : MonoBehaviour
 
 	void initialMolecule ()
 	{
-		hydrogens.Add (Instantiate (hydrogenPerfab, new Vector3 (position.x - lengthH_H / 2f, position.y - Mathf.Sqrt (Mathf.Pow (lengthO_H, 2) - Mathf.Pow (lengthH_H / 2, 2)), position.z), Quaternion.identity));
-		hydrogens.Add (Instantiate (hydrogenPerfab, new Vector3 (position.x + lengthH_H / 2f, position.y - Mathf.Sqrt (Mathf.Pow (lengthO_H, 2) - Mathf.Pow (lengthH_H / 2, 2)), position.z), Quaternion.identity));
+		
+		float lengthO_H = 0.1f;
+		float lengthH_H = 0.1633f;
+		Vector3 posO = this.position;
+		float posxH1 = position.x - lengthH_H / 2f;
+		float posyH1 = position.y - Mathf.Sqrt (Mathf.Pow (lengthO_H, 2) - Mathf.Pow (lengthH_H / 2, 2));
+		float poszH1 = position.z;
+		float posxH2 = position.x + lengthH_H / 2f;
+		float posyH2 = position.y - Mathf.Sqrt (Mathf.Pow (lengthO_H, 2) - Mathf.Pow (lengthH_H / 2, 2));
+		float poszH2 = position.z;
+
+		hydrogens.Add (Instantiate (hydrogenPerfab, new Vector3 (posxH1, posyH1, poszH2), Quaternion.identity));
+		hydrogens.Add (Instantiate (hydrogenPerfab, new Vector3 (posxH2, posyH2, poszH2), Quaternion.identity));
+
 		foreach (HydrogenScript h in hydrogens) {
 			h.transform.SetParent (this.transform);
 		}
@@ -135,11 +146,12 @@ public class OxygenScript : MonoBehaviour
 		forceVector = forceO;
 		momentumVector = momentumVector + (0.5f * time * forceVector);
 		rb.velocity = momentumVector;
+		vdwEquation();
 		periodicBoundary ();
-		//this.transform.Translate (momentumVector*Time.deltaTime);
+
 	}
 
-	public void VDW (float time)
+	public void vdwEquation ()
 	{
 		for (int i = 0; i < this.numberOfMolecule; i++) {
 			this.otherTransformObj = gameController.transform.GetChild (i);
@@ -149,25 +161,20 @@ public class OxygenScript : MonoBehaviour
 			if (position.x != tempPosition.x && position.y != tempPosition.y && position.z != tempPosition.z) {
 
 				float distance = (Mathf.Sqrt (Mathf.Pow ((tempPosition.x - position.x), 2) + Mathf.Pow ((tempPosition.y - position.y), 2) + Mathf.Pow ((tempPosition.z - position.z), 2)));
-				//Vector3 temp = new Vector3 (distance, distance, distance) + (time * this.momentumVector / massArgon);
-//				float scalarDistance = (Mathf.Sqrt (Mathf.Pow ((distance.x), 2) + Mathf.Pow ((distance.y), 2) + Mathf.Pow ((distance.z), 2)));
-
-
+			
 				float distance2 = (Mathf.Sqrt (Mathf.Pow ((tempPosition.x - tempObjectPosition.x), 2) + Mathf.Pow ((tempPosition.y - tempObjectPosition.y), 2) + Mathf.Pow ((tempPosition.z - tempObjectPosition.z), 2)));
-				//Vector3 temp2 = new Vector3 (distance2, distance2, distance2) + (time * this.momentumVector / massArgon);
-//				float scalarDistance2 = (Mathf.Sqrt (Mathf.Pow ((distance2.x), 2) + Mathf.Pow ((distance2.y), 2) + Mathf.Pow ((distance2.z), 2)));
 
-				if (distance <= maxDistance) {
+				if (distance <= minDistance) {
 					float energy = 12 * 4 * wellDepth * Mathf.Pow (diameter, 12) * Mathf.Pow (distance, -14) - 6 * 4 * wellDepth * Mathf.Pow (diameter, 6) * Mathf.Pow (distance, -8);
-					Vector3 force = 0.5f * (-energy * (tempPosition - position) * time);
+					Vector3 force = 0.5f * (-energy * (tempPosition - position));
 					rb.AddForce (force);
 					this.delObjForce (forceFromObj [i]);
 					forceFromObj [i] = force;
 					this.addObjForce (forceFromObj [i]);
 					forceVector += force;
-				} else if (distance2 <= maxDistance) {
+				} else if (distance2 <= minDistance) {
 					float energy = 12 * 4 * wellDepth * Mathf.Pow (diameter, 12) * Mathf.Pow (distance2, -14) - 6 * 4 * wellDepth * Mathf.Pow (diameter, 6) * Mathf.Pow (distance2, -8);
-					Vector3 force = 0.5f * (-energy * (tempPosition - tempObjectPosition) * time);
+					Vector3 force = 0.5f * (-energy * (tempPosition - tempObjectPosition));
 					rb.AddForce (force);
 					this.delObjForce (forceFromObj [i]);
 					forceFromObj [i] = force;
@@ -175,7 +182,7 @@ public class OxygenScript : MonoBehaviour
 					forceVector += force;
 				} else {
 					float energy = 12 * 4 * wellDepth * Mathf.Pow (diameter, 12) * Mathf.Pow (distance, -14) - 6 * 4 * wellDepth * Mathf.Pow (diameter, 6) * Mathf.Pow (distance, -8);             
-					Vector3 force = 0.5f * (energy * (tempPosition - position) * time);
+					Vector3 force = 0.5f * (energy * (tempPosition - position));
 					rb.AddForce (force);
 					this.delObjForce (forceFromObj [i]);
 					forceFromObj [i] = force;
@@ -199,24 +206,15 @@ public class OxygenScript : MonoBehaviour
 		float angle0 = 1.9106f;// (rad)
 		float K0 = 383f * Mathf.Pow (10, -3); // (KJ/mol/rad^2)
 		float scalarOH1 = Mathf.Sqrt (Mathf.Pow (posH1.x - posO.x, 2) + Mathf.Pow (posH1.y - posO.y, 2) + Mathf.Pow (posH1.z - posO.z, 2));
-		//Debug.Log ("scalarOH1 " + scalarOH1);
 		float scalarOH2 = Mathf.Sqrt (Mathf.Pow (posH2.x - posO.x, 2) + Mathf.Pow (posH2.y - posO.y, 2) + Mathf.Pow (posH2.z - posO.z, 2));
-		//Debug.Log ("scalarOH2 " + scalarOH2);
-		float OH1OH2 = (posH1.x - posO.x) * (posH2.x - posO.x) + (posH1.y - posO.y) * (posH2.y - posO.y) + (posH1.z - posO.z) * (posH2.z - posO.z); // (posH1 * posOH2)
-		//Debug.Log ("OH1OH2 " + OH1OH2);
+		float OH1OH2 = (posH1.x - posO.x) * (posH2.x - posO.x) + (posH1.y - posO.y) * (posH2.y - posO.y) + (posH1.z - posO.z) * (posH2.z - posO.z); 
 		float angle = Mathf.Acos (OH1OH2 / (scalarOH1 * scalarOH2));// (rad)
-//		Debug.Log ("angle " + angle);
 		this.enegy = K0 * (angle - angle0);
-//		Debug.Log ("enegy " + enegy);
-//		Debug.Log ("Mathf.sin(angle) : " + 1/Mathf.Sin(angle));
-//		Debug.Log ("Mathf.Asin(angle) : " + Mathf.Asin(angle));
-//		Debug.Log ("1/(scalarOH1*scalarOH2) : " + 1/(scalarOH1*scalarOH2));
-//		Debug.Log (": " + (posOH2 - posOH1*((scalarOH1*scalarOH2)/Mathf.Pow(scalarOH1,2))));
+
 		forceH1 = enegy / Mathf.Sin (angle) * 1 / (scalarOH1 * scalarOH2) * (posOH2 - posOH1 * ((scalarOH1 * scalarOH2) / Mathf.Pow (scalarOH1, 2)));
-//		Debug.Log ("force1 x:" + forceH1.x + " y:" + forceH1.y + " z:" + forceH1.z);
 		forceH2 = enegy / Mathf.Sin (angle) * 1 / (scalarOH1 * scalarOH2) * (posOH1 - posOH2 * ((scalarOH1 * scalarOH2) / Mathf.Pow (scalarOH2, 2)));
-//		Debug.Log ("force2 " + forceOH2);
 		forceO = -forceH1 - forceH2;
+
 		rb.AddForce (forceO);
 		this.transform.GetChild (0).gameObject.GetComponent<Rigidbody> ().AddForce (forceH1);
 		this.transform.GetChild (1).gameObject.GetComponent<Rigidbody> ().AddForce (forceH2);
@@ -253,6 +251,7 @@ public class OxygenScript : MonoBehaviour
 		springJoint2.enablePreprocessing = true;
 
 	}
+
 
 	//Periodic Boundary for set position of molecule ,when out side the box to opposite of the box
 	void periodicBoundary ()
