@@ -20,7 +20,7 @@ public class GameController : MonoBehaviour
 
 	public OxygenScript OxygenPerfab;
 	public List<OxygenScript> oxygens = new List<OxygenScript> ();
-	private int numberWater = 3;
+	private int numberWater = 10;
 
 	//Get GameCotroller for anthor script use
 	public static GameController getInstance ()
