@@ -33,7 +33,7 @@ public class OxygenScript : MonoBehaviour
 	private Vector3 tempObjectPosition;
 	private Transform otherTransformObj;
 	private Vector3[] forceFromObj;
-	private int numberOfMolecule;
+	private int numberOfWater;
 	private float wellDepth = 0.118f;
 	//constant well depth of argon (KJ/mol)
 	private float diameter = 3.58f;
@@ -68,6 +68,8 @@ public class OxygenScript : MonoBehaviour
 	Vector3 forceO;
 	float enegy;
 
+	List<Vector3> posAtoms = new List<Vector3> ();
+
 	//	public static GameController getInstance ()
 	//	{
 	//		return GameObject.Find ("GameController").GetComponent<GameController> ();
@@ -82,11 +84,11 @@ public class OxygenScript : MonoBehaviour
 
 		position = this.transform.position;
 
-		this.numberOfMolecule = gameController.getNumberOxygen ();
+		this.numberOfWater = gameController.getNumberOxygen ();
 
 		this.objForce = new Vector3 ();
 
-		this.forceFromObj = new Vector3[this.numberOfMolecule + 1];
+		this.forceFromObj = new Vector3[this.numberOfWater + 1];
 
 //		this.clickOn = false;
 
@@ -112,6 +114,8 @@ public class OxygenScript : MonoBehaviour
 		momentumVector = massArgon * velocityVector;
 		
 		conectHydrogenMolecule ();
+
+
 		//rb.velocity = momentumVector;
 		//Debug.Log ("O  "+momentumVector.x + " " + momentumVector.y + " " + momentumVector.z);
 	}
@@ -147,13 +151,14 @@ public class OxygenScript : MonoBehaviour
 		momentumVector = momentumVector + (0.5f * time * forceVector);
 		rb.velocity = momentumVector;
 		vdwEquation();
+		electrostatic ();
 		periodicBoundary ();
 
 	}
 
 	public void vdwEquation ()
 	{
-		for (int i = 0; i < this.numberOfMolecule; i++) {
+		for (int i = 0; i < this.numberOfWater; i++) {
 			this.otherTransformObj = gameController.transform.GetChild (i);
 			Vector3 position = transform.position;
 			Vector3 tempPosition = otherTransformObj.position;
@@ -219,6 +224,37 @@ public class OxygenScript : MonoBehaviour
 		this.transform.GetChild (0).gameObject.GetComponent<Rigidbody> ().AddForce (forceH1);
 		this.transform.GetChild (1).gameObject.GetComponent<Rigidbody> ().AddForce (forceH2);
 	}
+
+
+	void electrostatic(){
+		float Kspring = 9 * Mathf.Pow (10, 15); // (KJnm/c^2)
+		float elementaryCharge = 1.602f * Mathf.Pow (10,-19);// c
+		float electricChargeOxygen = -0.82f * elementaryCharge; // c
+		float electricChargeHydrogen = 0.41f * elementaryCharge; // c
+		float numberHydrogeninWater = 2 ;
+		List<Vector3> posAtoms = new List<Vector3> ();
+		Vector3 position = this.transform.position ; 
+		for(int i = 0 ; i < numberOfWater ; i ++){
+			Transform transformChild = this.transform.parent.GetChild (i);
+
+			if(position != transformChild.position){
+				posAtoms.Add (transformChild.position);
+			}
+			for(int j = 0 ; j < numberHydrogeninWater  ; j ++){
+				if (position != transformChild.GetChild (j).position) {
+					posAtoms.Add (transformChild.GetChild (j).position);
+				}
+			}
+		}
+
+		foreach (Vector3 tempPos in posAtoms) {
+			Vector3 unitVector = tempPos - position;
+			Vector3 springForce = ( (Kspring * electricChargeOxygen * electricChargeHydrogen) 
+				/ Mathf.Pow(Mathf.Pow(tempPos.x-position.x,2)+Mathf.Pow(tempPos.y-position.y,2)+Mathf.Pow(tempPos.z-position.z,2),1.5f) ) * unitVector;
+			rb.AddForce (springForce);
+		}
+	}
+
 
 	void conectHydrogenMolecule ()
 	{

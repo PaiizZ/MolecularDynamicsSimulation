@@ -7,7 +7,7 @@ public class HydrogenScript : MonoBehaviour
 	//Physical of molecule
 	public Rigidbody rb;
 	//Controller every molecules
-	//	private GameController gameController;
+	private GameController gameController;
 	// molar gas constant ( KJ/mol )
 	private float R = 8.31447f * Mathf.Pow (10, -3);
 	// temperature in kelvins (25+273)
@@ -29,15 +29,18 @@ public class HydrogenScript : MonoBehaviour
 	public Vector3 momentumVector;
 	private Vector3 position;
 	private Vector3 forceVector;
+	private int numberOfWater;
 
 	SpringJoint spring;
 
 	// Use this for initialization
 	void Start ()
 	{
-//		gameController = GameController.getInstance ();
+		gameController = GameController.getInstance ();
 
 		rb = GetComponent<Rigidbody> ();
+
+		this.numberOfWater = gameController.getNumberOxygen ();
 
 		alpha = Random.Range (-3.0f, 3.0f);
 		beta = Random.Range (-3.0f, 3.0f);
@@ -75,6 +78,36 @@ public class HydrogenScript : MonoBehaviour
 			forceVector = this.transform.parent.gameObject.GetComponent<OxygenScript> ().forceH2;
 			momentumVector = momentumVector + (0.5f * time * forceVector);
 			rb.velocity = momentumVector;
+		}
+		electrostatic ();
+	}
+
+	void electrostatic(){
+		float Kspring = 9 * Mathf.Pow (10, 15); // (KJnm/c^2)
+		float elementaryCharge = 1.602f * Mathf.Pow (10,-19);// c
+		float electricChargeOxygen = -0.82f * elementaryCharge; // c
+		float electricChargeHydrogen = 0.41f * elementaryCharge; // c
+		float numberHydrogeninWater = 2 ;
+		List<Vector3> posAtoms = new List<Vector3> ();
+		Vector3 position = this.transform.position ; 
+		for(int i = 0 ; i < numberOfWater ; i ++){
+			Transform transformChild = this.transform.parent.parent.GetChild (i);
+
+			if(position != transformChild.position){
+				posAtoms.Add (transformChild.position);
+			}
+			for(int j = 0 ; j < numberHydrogeninWater  ; j ++){
+				if (position != transformChild.GetChild (j).position) {
+					posAtoms.Add (transformChild.GetChild (j).position);
+				}
+			}
+		}
+
+		foreach (Vector3 tempPos in posAtoms) {
+			Vector3 unitVector = tempPos - position;
+			Vector3 springForce = ( (Kspring * electricChargeOxygen * electricChargeHydrogen) 
+				/ Mathf.Pow(Mathf.Pow(tempPos.x-position.x,2)+Mathf.Pow(tempPos.y-position.y,2)+Mathf.Pow(tempPos.z-position.z,2),1.5f) ) * unitVector;
+			rb.AddForce (springForce);
 		}
 	}
 
