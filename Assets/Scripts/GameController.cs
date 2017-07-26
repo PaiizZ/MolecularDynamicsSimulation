@@ -20,7 +20,7 @@ public class GameController : MonoBehaviour
 	//List of molecules that created
 	public List<OxygenScript> oxygens = new List<OxygenScript> ();
 	// private number of water molecules
-	private int numberWater = 100;
+	private int numberWater = 50;
 
 	//focus molecule about information
 	private ArgonScript argonFocus;

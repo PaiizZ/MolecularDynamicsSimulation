@@ -106,12 +106,12 @@ public class OxygenScript : MonoBehaviour
 	{
 		this.time = Time.deltaTime * Mathf.Pow (10, -12);
 		momentumVector = momentumVector + (0.5f * time * forceVector);
-		springForce ();
+//		springForce ();
 		forceVector = forceO;
 		momentumVector = momentumVector + (0.5f * time * forceVector);
 		rb.velocity = momentumVector;
-		setTempPosition ();
-		vdwEquation (time);
+//		setTempPosition ();
+//		vdwEquation (time);
 		electrostatic ();
 		periodicBoundary ();
 		checkOnClick ();
@@ -122,8 +122,8 @@ public class OxygenScript : MonoBehaviour
 	void initialMolecule ()
 	{
 
-		float lengthO_H = 0.1f;
-		float lengthH_H = 0.1633f;
+		float lengthO_H = 0.05f;
+		float lengthH_H = 0.07f;
 		Vector3 posO = this.position;
 		float posxH1 = position.x - lengthH_H / 2f;
 		float posyH1 = position.y - Mathf.Sqrt (Mathf.Pow (lengthO_H, 2) - Mathf.Pow (lengthH_H / 2, 2));
@@ -220,29 +220,38 @@ public class OxygenScript : MonoBehaviour
 	//calculate an electrostatic force every pair
 	void electrostatic ()
 	{
-		float Kspring = 9 * Mathf.Pow (10, 15); // (KJnm/c^2)
-		float elementaryCharge = 1.602f * Mathf.Pow (10, -19);// c
-		float electricChargeOxygen = -0.82f * elementaryCharge; // c
-		float electricChargeHydrogen = 0.41f * elementaryCharge; // c
-		float numberHydrogeninWater = 2;
+		// Spring constant = 6.02f * Mathf.Pow (10, 23) * 9 * Mathf.Pow (10, 15); // (KJnm/c^2)
+		// elementaryCharge = 1.602f * Mathf.Pow (10, -19);// c
+		// electricChargeOxygen = -0.82f * elementaryCharge; // c
+		// electricChargeHydrogen = 0.41f * elementaryCharge; // c
+		float electricChargeO_O = 54 * Mathf.Pow(1.33,2); // Spring constant * electricChargeOxygen + electricChargeOxygen
+		float electricChargeH_H = 54 * Mathf.Pow(0.665,2); // Spring constant * electricChargeHydrogen + electricChargeHydrogen
+		float electricChargeO_H = 54 * 0.665f * -1.33f; // Spring constant * electricChargeOxygen + electricChargeHydrogen
+		
 		List<Vector3> posAtoms = new List<Vector3> ();
+		List<float> electricChargeOfAtoms = new List<float> ();
+		
 		Vector3 position = this.transform.position; 
 		for (int i = 0; i < numberOfWater; i++) {
 			Transform transformChild = this.transform.parent.GetChild (i);
-
+			
 			if (position != transformChild.position) {
 				posAtoms.Add (transformChild.position);
+				electricChargeOfAtoms.Add(electricChargeO_O);
 			}
+			
 			for (int j = 0; j < numberHydrogeninWater; j++) {
 				if (position != transformChild.GetChild (j).position) {
 					posAtoms.Add (transformChild.GetChild (j).position);
+					electricChargeOfAtoms.Add(electricChargeO_H);
 				}
 			}
+			
 		}
 
 		foreach (Vector3 tempPos in posAtoms) {
 			Vector3 unitVector = tempPos - position;
-			Vector3 springForce = ((Kspring * electricChargeOxygen * electricChargeHydrogen)
+			Vector3 springForce = (electricChargeOfAtoms[0]
 			                      / Mathf.Pow (Mathf.Pow (tempPos.x - position.x, 2) + Mathf.Pow (tempPos.y - position.y, 2) + Mathf.Pow (tempPos.z - position.z, 2), 1.5f)) * unitVector;
 			rb.AddForce (springForce);
 		}
