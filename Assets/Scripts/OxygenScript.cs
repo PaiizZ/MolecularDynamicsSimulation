@@ -62,6 +62,8 @@ public class OxygenScript : MonoBehaviour
 	public HydrogenScript hydrogenPerfab;
 	public List<HydrogenScript> hydrogens = new List<HydrogenScript> ();
 
+	// boolean to check, when mouse click molecule
+	public bool clickOn;
 	
 	// Use this for initialization
 	void Start ()
@@ -70,7 +72,9 @@ public class OxygenScript : MonoBehaviour
 
 		rb = GetComponent<Rigidbody> ();
 
-		position = this.transform.position;
+		this.position = this.transform.position;
+		
+		this.clickOn = false;
 
 		this.numberOfWater = gameController.getNumberOxygen ();
 
@@ -106,9 +110,11 @@ public class OxygenScript : MonoBehaviour
 		forceVector = forceO;
 		momentumVector = momentumVector + (0.5f * time * forceVector);
 		rb.velocity = momentumVector;
-		vdwEquation ();
+		setTempPosition ();
+		vdwEquation (time);
 		electrostatic ();
 		periodicBoundary ();
+		checkOnClick ();
 
 	}
 
@@ -134,8 +140,9 @@ public class OxygenScript : MonoBehaviour
 		}
 	}
 
+	
 	//calculate force by van-der-wan equation 
-	public void vdwEquation ()
+	public void vdwEquation (float time)
 	{
 		for (int i = 0; i < this.numberOfWater; i++) {
 			this.otherTransformObj = gameController.transform.GetChild (i);
@@ -145,29 +152,34 @@ public class OxygenScript : MonoBehaviour
 			if (position.x != tempPosition.x && position.y != tempPosition.y && position.z != tempPosition.z) {
 
 				float distance = (Mathf.Sqrt (Mathf.Pow ((tempPosition.x - position.x), 2) + Mathf.Pow ((tempPosition.y - position.y), 2) + Mathf.Pow ((tempPosition.z - position.z), 2)));
-			
-				float distance2 = (Mathf.Sqrt (Mathf.Pow ((tempPosition.x - tempObjectPosition.x), 2) + Mathf.Pow ((tempPosition.y - tempObjectPosition.y), 2) + Mathf.Pow ((tempPosition.z - tempObjectPosition.z), 2)));
+				Vector3 temp = new Vector3 (distance, distance, distance) + (time * this.momentumVector / massArgon);
+				float scalarDistance = (Mathf.Sqrt (Mathf.Pow ((temp.x), 2) + Mathf.Pow ((temp.y), 2) + Mathf.Pow ((temp.z), 2)));
 
-				if (distance <= minDistance) {
-					float energy = 12 * 4 * wellDepth * Mathf.Pow (diameter, 12) * Mathf.Pow (distance, -14) - 6 * 4 * wellDepth * Mathf.Pow (diameter, 6) * Mathf.Pow (distance, -8);
-					Vector3 force = 0.5f * (-energy * (tempPosition - position));
-					rb.AddForce (force);
+
+				float distance2 = (Mathf.Sqrt (Mathf.Pow ((tempPosition.x - tempObjectPosition.x), 2) + Mathf.Pow ((tempPosition.y - tempObjectPosition.y), 2) + Mathf.Pow ((tempPosition.z - tempObjectPosition.z), 2)));
+				Vector3 temp2 = new Vector3 (distance2, distance2, distance2) + (time * this.momentumVector / massArgon);
+				float scalarDistance2 = (Mathf.Sqrt (Mathf.Pow ((temp2.x), 2) + Mathf.Pow ((temp2.y), 2) + Mathf.Pow ((temp2.z), 2)));
+				
+				if (scalarDistance <= minDistance) {
+					float energy = 12 * 4 * wellDepth * Mathf.Pow (diameter, 12) * Mathf.Pow (scalarDistance, -14) - 6 * 4 * wellDepth * Mathf.Pow (diameter, 6) * Mathf.Pow (scalarDistance, -8);
+					Vector3 force = 0.5f * (-energy * (tempPosition - position) * time);
+					//rb.AddForce (force);
 					this.delObjForce (forceFromObj [i]);
 					forceFromObj [i] = force;
 					this.addObjForce (forceFromObj [i]);
 					forceVector += force;
-				} else if (distance2 <= minDistance) {
-					float energy = 12 * 4 * wellDepth * Mathf.Pow (diameter, 12) * Mathf.Pow (distance2, -14) - 6 * 4 * wellDepth * Mathf.Pow (diameter, 6) * Mathf.Pow (distance2, -8);
-					Vector3 force = 0.5f * (-energy * (tempPosition - tempObjectPosition));
+				} else if (scalarDistance2 <= minDistance) {
+					float energy = 12 * 4 * wellDepth * Mathf.Pow (diameter, 12) * Mathf.Pow (scalarDistance2, -14) - 6 * 4 * wellDepth * Mathf.Pow (diameter, 6) * Mathf.Pow (scalarDistance2, -8);
+					Vector3 force = 0.5f * (-energy * (tempPosition - tempObjectPosition) * time);
 					rb.AddForce (force);
-					this.delObjForce (forceFromObj [i]);
+					//this.delObjForce (forceFromObj [i]);
 					forceFromObj [i] = force;
 					this.addObjForce (forceFromObj [i]);
 					forceVector += force;
 				} else {
-					float energy = 12 * 4 * wellDepth * Mathf.Pow (diameter, 12) * Mathf.Pow (distance, -14) - 6 * 4 * wellDepth * Mathf.Pow (diameter, 6) * Mathf.Pow (distance, -8);             
-					Vector3 force = 0.5f * (energy * (tempPosition - position));
-					rb.AddForce (force);
+					float energy = 12 * 4 * wellDepth * Mathf.Pow (diameter, 12) * Mathf.Pow (scalarDistance, -14) - 6 * 4 * wellDepth * Mathf.Pow (diameter, 6) * Mathf.Pow (scalarDistance, -8);             
+					Vector3 force = 0.5f * (energy * (tempPosition - position) * time);
+					//rb.AddForce (force);
 					this.delObjForce (forceFromObj [i]);
 					forceFromObj [i] = force;
 					this.addObjForce (forceFromObj [i]);
@@ -208,31 +220,41 @@ public class OxygenScript : MonoBehaviour
 	//calculate an electrostatic force every pair
 	void electrostatic ()
 	{
-		float Kspring = 9 * Mathf.Pow (10, 15); // (KJnm/c^2)
-		float elementaryCharge = 1.602f * Mathf.Pow (10, -19);// c
-		float electricChargeOxygen = -0.82f * elementaryCharge; // c
-		float electricChargeHydrogen = 0.41f * elementaryCharge; // c
-		float numberHydrogeninWater = 2;
+		// Spring constant = 6.02f * Mathf.Pow (10, 23) * 9 * Mathf.Pow (10, 15); // (KJnm/c^2)
+		// elementaryCharge = 1.602f * Mathf.Pow (10, -19);// c
+		// electricChargeOxygen = -0.82f * elementaryCharge; // c
+		// electricChargeHydrogen = 0.41f * elementaryCharge; // c
+		float electricChargeO_O = 54f * Mathf.Pow(1.33f,2); // Spring constant * electricChargeOxygen + electricChargeOxygen
+		float electricChargeH_H = 54f * Mathf.Pow(0.665f,2); // Spring constant * electricChargeHydrogen + electricChargeHydrogen
+		float electricChargeO_H = 54f * 0.665f * -1.33f; // Spring constant * electricChargeOxygen + electricChargeHydrogen
+		float numberHydrogeninWater = 2 ;
+
 		List<Vector3> posAtoms = new List<Vector3> ();
-		Vector3 position = this.transform.position; 
+		List<float> electricChargeOfAtoms = new List<float> ();
+
 		for (int i = 0; i < numberOfWater; i++) {
 			Transform transformChild = this.transform.parent.GetChild (i);
-
+			
 			if (position != transformChild.position) {
 				posAtoms.Add (transformChild.position);
+				electricChargeOfAtoms.Add(electricChargeO_O);
 			}
+			
 			for (int j = 0; j < numberHydrogeninWater; j++) {
 				if (position != transformChild.GetChild (j).position) {
 					posAtoms.Add (transformChild.GetChild (j).position);
+					electricChargeOfAtoms.Add(electricChargeO_H);
 				}
 			}
+			
 		}
-
-		foreach (Vector3 tempPos in posAtoms) {
-			Vector3 unitVector = tempPos - position;
-			Vector3 springForce = ((Kspring * electricChargeOxygen * electricChargeHydrogen)
-			                      / Mathf.Pow (Mathf.Pow (tempPos.x - position.x, 2) + Mathf.Pow (tempPos.y - position.y, 2) + Mathf.Pow (tempPos.z - position.z, 2), 1.5f)) * unitVector;
-			rb.AddForce (springForce);
+			
+		for(int i = 0 ; i < electricChargeOfAtoms.Count ; i++){
+			Vector3 posAtomInList = posAtoms [i];
+			Vector3 unitVector = posAtomInList - position;
+			Vector3 springForce = (electricChargeOfAtoms[i]
+				/ Mathf.Pow (Mathf.Pow (posAtomInList.x - position.x, 2) + Mathf.Pow (posAtomInList.y - position.y, 2) + Mathf.Pow (posAtomInList.z - position.z, 2), 1.5f)) * unitVector;
+			rb.AddForce (springForce*Mathf.Pow(10,-3));
 		}
 	}
 
@@ -268,30 +290,29 @@ public class OxygenScript : MonoBehaviour
 		springJoint2.enablePreprocessing = true;
 
 	}
-
-
+	
 	//Periodic Boundary for set position of molecule ,when out side the box to opposite of the box
 	void periodicBoundary ()
 	{
 		this.position = this.transform.position;
 		Vector3 positionH1 = this.transform.GetChild (0).position;
 		Vector3 positionH2 = this.transform.GetChild (1).position;
-		if (position.x >= 5.05f && positionH1.x >= 5.05f && positionH2.x >= 5.05f) {
-			position.x = -5.05f;
-		} else if (position.x <= -5.05f && positionH1.x <= -5.05f && positionH2.x <= -5.05f) {
-			position.x = 5.05f;
+		if (position.x >= 1.5f && positionH1.x >= 1.5f && positionH2.x >= 1.5f) {
+			position.x = -1.4f;
+		} else if (position.x <= -1.5f && positionH1.x <= -1.5f && positionH2.x <= -1.5f) {
+			position.x = 1.4f;
 		}
 
-		if (position.y >= 5.05f && positionH1.y >= 5.05f && positionH2.y >= 5.05f) {
-			position.y = -5.05f;
-		} else if (position.y <= -5.05f && positionH1.y <= -5.05f && positionH2.y <= -5.05f) {
-			position.y = 5.05f;
+		if (position.y >= 1.5f && positionH1.y >= 1.5f && positionH2.y >= 1.5f) {
+			position.y = -1.4f;
+		} else if (position.y <= -1.5f && positionH1.y <= -1.5f && positionH2.y <= -1.5f) {
+			position.y = 1.4f;
 		}
 
-		if (position.z >= 5.05f && positionH1.z >= 5.05f && positionH2.z >= 5.05f) {
-			position.z = -5.05f;
-		} else if (position.z <= -5.05f && positionH1.z <= -5.05f && positionH2.z <= -5.05f) {
-			position.z = 5.05f;
+		if (position.z >= 1.5f && positionH1.z >= 1.5f && positionH2.z >= 1.5f) {
+			position.z = -1.4f;
+		} else if (position.z <= -1.5f && positionH1.z <= -1.5f && positionH2.z <= -1.5f) {
+			position.z = 1.4f;
 		}
 
 		this.transform.position = new Vector3 (position.x, position.y, position.z);
@@ -315,21 +336,45 @@ public class OxygenScript : MonoBehaviour
 		//Set tmep object position equals this object position 
 		this.tempObjectPosition = this.transform.position;
 		if (this.tempObjectPosition.x == Mathf.Abs (this.tempObjectPosition.x)) {
-			this.tempObjectPosition.x -= 10;
+			this.tempObjectPosition.x -= 3;
 		} else {
-			this.tempObjectPosition.x += 10;
+			this.tempObjectPosition.x += 3;
 		}
 
 		if (this.tempObjectPosition.y == Mathf.Abs (this.tempObjectPosition.y)) {
-			this.tempObjectPosition.y -= 10;
+			this.tempObjectPosition.y -= 3;
 		} else {
-			this.tempObjectPosition.y += 10;
+			this.tempObjectPosition.y += 3;
 		}
 
 		if (this.tempObjectPosition.z == Mathf.Abs (this.tempObjectPosition.z)) {
-			this.tempObjectPosition.z -= 10;
+			this.tempObjectPosition.z -= 3;
 		} else {
-			this.tempObjectPosition.z += 10;
+			this.tempObjectPosition.z += 3;
+		}
+	}
+	
+	//Change clickOn is true, when interest this molecule
+	//and send this object to gameController know about value of this molecule.
+	public void OnMouseDown ()
+	{
+		this.clickOn = true;
+		GameController.getInstance ().changeWaterFocus (this);
+	}
+
+	//Change clickOn is false, when disregrard this molecule.
+	public void changeOnClick ()
+	{
+		this.clickOn = false;
+	}
+
+	//Check click on molecule and change color, when click insterest molecule.
+	void checkOnClick ()
+	{
+		if (clickOn) {
+			this.GetComponent<Renderer> ().material.color = Color.green;
+		} else if (!clickOn) {
+			this.GetComponent<Renderer> ().material.color = Color.yellow;
 		}
 	}
 }

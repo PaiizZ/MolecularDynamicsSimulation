@@ -41,6 +41,8 @@ public class HydrogenScript : MonoBehaviour
 
 		this.numberOfWater = gameController.getNumberOxygen ();
 
+		this.position = this.transform.position; 
+
 		alpha = Random.Range (-3.0f, 3.0f);
 		beta = Random.Range (-3.0f, 3.0f);
 		gamma = Random.Range (-3.0f, 3.0f);
@@ -79,31 +81,39 @@ public class HydrogenScript : MonoBehaviour
 	//calculate an electrostatic force every pair
 	void electrostatic ()
 	{
-		float Kspring = 9 * Mathf.Pow (10, 15); // (KJnm/c^2)
-		float elementaryCharge = 1.602f * Mathf.Pow (10, -19); // c
-		float electricChargeOxygen = -0.82f * elementaryCharge; // c
-		float electricChargeHydrogen = 0.41f * elementaryCharge; // c
-		float numberHydrogeninWater = 2;
+		// Spring constant = 6.02f * Mathf.Pow (10, 23) * 9 * Mathf.Pow (10, 15); // (KJnm/c^2)
+		// elementaryCharge = 1.602f * Mathf.Pow (10, -19);// c
+		// electricChargeOxygen = -0.82f * elementaryCharge; // c
+		// electricChargeHydrogen = 0.41f * elementaryCharge; // c
+		float electricChargeO_O = 54f * Mathf.Pow(1.33f,2); // Spring constant * electricChargeOxygen + electricChargeOxygen
+		float electricChargeH_H = 54f * Mathf.Pow(0.665f,2); // Spring constant * electricChargeHydrogen + electricChargeHydrogen
+		float electricChargeO_H = 54f * 0.665f * -1.33f; // Spring constant * electricChargeOxygen + electricChargeHydrogen
+		float numberHydrogeninWater = 2 ;
+
 		List<Vector3> posAtoms = new List<Vector3> ();
-		Vector3 position = this.transform.position; 
+		List<float> electricChargeOfAtoms = new List<float> ();
+
 		for (int i = 0; i < numberOfWater; i++) {
 			Transform transformChild = this.transform.parent.parent.GetChild (i);
 
-			if (position != transformChild.position) {
+			if (this.position != transformChild.position) {
 				posAtoms.Add (transformChild.position);
+				electricChargeOfAtoms.Add(electricChargeH_H);
 			}
 			for (int j = 0; j < numberHydrogeninWater; j++) {
-				if (position != transformChild.GetChild (j).position) {
+				if (this.position != transformChild.GetChild (j).position) {
 					posAtoms.Add (transformChild.GetChild (j).position);
+					electricChargeOfAtoms.Add(electricChargeO_H);
 				}
 			}
 		}
 
-		foreach (Vector3 tempPos in posAtoms) {
-			Vector3 unitVector = tempPos - position;
-			Vector3 springForce = ((Kspring * electricChargeOxygen * electricChargeHydrogen)
-			                      / Mathf.Pow (Mathf.Pow (tempPos.x - position.x, 2) + Mathf.Pow (tempPos.y - position.y, 2) + Mathf.Pow (tempPos.z - position.z, 2), 1.5f)) * unitVector;
-			rb.AddForce (springForce);
+		for(int i = 0 ; i < electricChargeOfAtoms.Count ; i++){
+			Vector3 posAtomInList = posAtoms [i];
+			Vector3 unitVector = posAtomInList - this.position;
+			Vector3 springForce = (electricChargeOfAtoms[i]
+				/ Mathf.Pow (Mathf.Pow (posAtomInList.x - position.x, 2) + Mathf.Pow (posAtomInList.y - position.y, 2) + Mathf.Pow (posAtomInList.z - position.z, 2), 1.5f)) * unitVector;
+			rb.AddForce (springForce*Mathf.Pow(10,-3));
 		}
 	}
 

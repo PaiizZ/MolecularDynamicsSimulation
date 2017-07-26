@@ -20,10 +20,12 @@ public class GameController : MonoBehaviour
 	//List of molecules that created
 	public List<OxygenScript> oxygens = new List<OxygenScript> ();
 	// private number of water molecules
-	private int numberWater = 10;
+	private int numberWater = 5;
 
 	//focus molecule about information
 	private ArgonScript argonFocus;
+	
+	private OxygenScript waterFocus;
 
 	//Get GameCotroller for anthor script use
 	public static GameController getInstance ()
@@ -35,33 +37,41 @@ public class GameController : MonoBehaviour
 	void Start ()
 	{
 
-//		for (int i = 0; i < numberWater; i++) {
+		for (int i = 0; i < numberWater; i++) {
+			float randomPosX = Random.Range (-1.44f, 1.44f);
+			float randomPosY = Random.Range (-1.44f, 1.44f);
+			float randomPosZ = Random.Range (-1.44f, 1.44f);
+			oxygens.Add (Instantiate (OxygenPerfab, new Vector3 (randomPosX, randomPosY, randomPosZ), Quaternion.identity));
+		}
+
+		foreach (OxygenScript oxygen in oxygens) {
+			oxygen.transform.SetParent (this.transform);
+		}
+			
+//		for (int i = 0; i < numberArgon; i++) {
 //			float randomPosX = Random.Range (-4.8f, 4.8f);
 //			float randomPosY = Random.Range (-4.8f, 4.8f);
 //			float randomPosZ = Random.Range (-4.8f, 4.8f);
-//			oxygens.Add (Instantiate (OxygenPerfab, new Vector3 (randomPosX, randomPosY, randomPosZ), Quaternion.identity));
+//			argons.Add (Instantiate (argonPerfab, new Vector3 (randomPosX, randomPosY, randomPosZ), Quaternion.identity));
 //		}
-//
-//		foreach (OxygenScript oxygen in oxygens) {
-//			oxygen.transform.SetParent (this.transform);
+//		
+//		foreach (ArgonScript argon in argons) {
+//			argon.transform.SetParent (this.transform);
 //		}
-			
-		for (int i = 0; i < numberArgon; i++) {
-			float randomPosX = Random.Range (-4.8f, 4.8f);
-			float randomPosY = Random.Range (-4.8f, 4.8f);
-			float randomPosZ = Random.Range (-4.8f, 4.8f);
-			argons.Add (Instantiate (argonPerfab, new Vector3 (randomPosX, randomPosY, randomPosZ), Quaternion.identity));
-		}
-		
-		foreach (ArgonScript argon in argons) {
-			argon.transform.SetParent (this.transform);
-		}
 
 	}
 
 	// Update is called once per frame
 	void Update ()
 	{
+		if (waterFocus != null) {
+			nameText.text = "Name : " + waterFocus.objName;
+			moentumText.text = "Momentum : " + waterFocus.momentumVector.magnitude.ToString ("F8") + " Kg·m/mol·s ";
+			forceText.text = "Force : " + (waterFocus.objForce.magnitude).ToString ("F15") + " KJ/mol";
+			tempText.text = "Temperature " + waterFocus.T + " Kelvins"; 
+			positionText.text = "Position  x : " + waterFocus.objPosition.x.ToString ("F3") + " y : " + waterFocus.objPosition.y.ToString ("F3") + " z : " + waterFocus.objPosition.z.ToString ("F3");
+		}
+		
 		if (argonFocus != null) {
 			nameText.text = "Name : " + argonFocus.objName;
 			moentumText.text = "Momentum : " + argonFocus.momentumVector.magnitude.ToString ("F8") + " Kg·m/mol·s ";
@@ -92,6 +102,17 @@ public class GameController : MonoBehaviour
 		} else {
 			this.argonFocus.changeOnClick ();
 			this.argonFocus = molecule;
+		}
+	}
+	
+	//Change focus of molecule to anothor molecule
+	public void changeWaterFocus (OxygenScript molecule)
+	{
+		if (this.waterFocus == null) {
+			this.waterFocus = molecule;
+		} else {
+			this.waterFocus.changeOnClick ();
+			this.waterFocus = molecule;
 		}
 	}
 }
