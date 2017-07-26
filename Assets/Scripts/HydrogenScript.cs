@@ -126,7 +126,7 @@ public class HydrogenScript : MonoBehaviour
 			spring.connectedBody = this.transform.parent.GetChild (1).gameObject.GetComponent<Rigidbody> ();
 			spring.anchor = new Vector3 (0, 0, 0);
 			spring.connectedAnchor = new Vector3 (0, 0, 0);
-			spring.spring = 10;
+			spring.spring = 100;
 			spring.minDistance = 0.1633f;
 			spring.maxDistance = 0.1633f;
 			spring.tolerance = 0.025f;
@@ -140,7 +140,7 @@ public class HydrogenScript : MonoBehaviour
 			spring.connectedBody = this.transform.parent.GetChild (0).gameObject.GetComponent<Rigidbody> ();
 			spring.anchor = new Vector3 (0, 0, 0);
 			spring.connectedAnchor = new Vector3 (0, 0, 0);
-			spring.spring = 10;
+			spring.spring = 100;
 			spring.minDistance = 0.1633f;
 			spring.maxDistance = 0.1633f;
 			spring.tolerance = 0.025f;

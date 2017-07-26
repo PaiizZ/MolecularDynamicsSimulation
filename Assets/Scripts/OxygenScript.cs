@@ -36,6 +36,7 @@ public class OxygenScript : MonoBehaviour
 	private float wellDepth = 0.118f; //constant well depth of argon (KJ/mol)
 	private float diameter = 3.58f; //constant diameter of argon (Angstrom)
 	private float minDistance = 3f;
+	private float sqrMaxVelocity; //attributes for set max velocity
 
 	// attributes for show value on sence
 	public Vector3 objForce;
@@ -75,6 +76,8 @@ public class OxygenScript : MonoBehaviour
 		this.position = this.transform.position;
 		
 		this.clickOn = false;
+		
+		setMaxVelocity (8f);
 
 		this.numberOfWater = gameController.getNumberOxygen ();
 
@@ -105,15 +108,22 @@ public class OxygenScript : MonoBehaviour
 	void Update ()
 	{
 		this.time = Time.deltaTime * Mathf.Pow (10, -12);
-		momentumVector = momentumVector + (0.5f * time * forceVector);
-		springForce ();
-		forceVector = forceO;
-		momentumVector = momentumVector + (0.5f * time * forceVector);
-		rb.velocity = momentumVector;
 		setTempPosition ();
+		momentumVector = momentumVector + (0.5f * time * forceVector);
 		vdwEquation (time);
+		momentumVector = momentumVector + (0.5f * time * forceVector);
+		rb.velocity = momentumVector;		
 		electrostatic ();
+		springForce ();
 		periodicBoundary ();
+		if (rb.velocity.sqrMagnitude > this.sqrMaxVelocity) {
+			Debug.Log (" rb.velocity.velocity1 " + rb.velocity.x + " y " + rb.velocity.y + " z " + rb.velocity.z);
+			Debug.Log (" rb.velocity.normalized " + rb.velocity.normalized);
+			rb.velocity = Vector3.zero;
+			rb.angularVelocity = Vector3.zero;
+			rb.velocity = massArgon * velocityVector;
+			Debug.Log (" rb.velocity.velocity2 " + rb.velocity.x + " y " + rb.velocity.y + " z " + rb.velocity.z);
+		}
 		checkOnClick ();
 
 	}
@@ -122,8 +132,8 @@ public class OxygenScript : MonoBehaviour
 	void initialMolecule ()
 	{
 
-		float lengthO_H = 0.1f;
-		float lengthH_H = 0.1633f;
+		float lengthO_H = 0.07f;
+		float lengthH_H = 0.12f;
 		Vector3 posO = this.position;
 		float posxH1 = position.x - lengthH_H / 2f;
 		float posyH1 = position.y - Mathf.Sqrt (Mathf.Pow (lengthO_H, 2) - Mathf.Pow (lengthH_H / 2, 2));
@@ -163,7 +173,7 @@ public class OxygenScript : MonoBehaviour
 				if (scalarDistance <= minDistance) {
 					float energy = 12 * 4 * wellDepth * Mathf.Pow (diameter, 12) * Mathf.Pow (scalarDistance, -14) - 6 * 4 * wellDepth * Mathf.Pow (diameter, 6) * Mathf.Pow (scalarDistance, -8);
 					Vector3 force = 0.5f * (-energy * (tempPosition - position) * time);
-					//rb.AddForce (force);
+					rb.AddForce (force);
 					this.delObjForce (forceFromObj [i]);
 					forceFromObj [i] = force;
 					this.addObjForce (forceFromObj [i]);
@@ -172,14 +182,14 @@ public class OxygenScript : MonoBehaviour
 					float energy = 12 * 4 * wellDepth * Mathf.Pow (diameter, 12) * Mathf.Pow (scalarDistance2, -14) - 6 * 4 * wellDepth * Mathf.Pow (diameter, 6) * Mathf.Pow (scalarDistance2, -8);
 					Vector3 force = 0.5f * (-energy * (tempPosition - tempObjectPosition) * time);
 					rb.AddForce (force);
-					//this.delObjForce (forceFromObj [i]);
+					this.delObjForce (forceFromObj [i]);
 					forceFromObj [i] = force;
 					this.addObjForce (forceFromObj [i]);
 					forceVector += force;
 				} else {
 					float energy = 12 * 4 * wellDepth * Mathf.Pow (diameter, 12) * Mathf.Pow (scalarDistance, -14) - 6 * 4 * wellDepth * Mathf.Pow (diameter, 6) * Mathf.Pow (scalarDistance, -8);             
 					Vector3 force = 0.5f * (energy * (tempPosition - position) * time);
-					//rb.AddForce (force);
+					rb.AddForce (force);
 					this.delObjForce (forceFromObj [i]);
 					forceFromObj [i] = force;
 					this.addObjForce (forceFromObj [i]);
@@ -266,7 +276,7 @@ public class OxygenScript : MonoBehaviour
 		springJoint1.connectedBody = this.transform.GetChild (0).gameObject.GetComponent<Rigidbody> ();
 		springJoint1.anchor = new Vector3 (0, 0, 0);
 		springJoint1.connectedAnchor = new Vector3 (0, 0, 0);
-		springJoint1.spring = 34500;
+		springJoint1.spring = 50000;
 		springJoint1.minDistance = 0.0f;
 		springJoint1.maxDistance = 0.0f;
 		springJoint1.tolerance = 0.025f;
@@ -280,7 +290,7 @@ public class OxygenScript : MonoBehaviour
 		springJoint2.connectedBody = this.transform.GetChild (1).gameObject.GetComponent<Rigidbody> ();
 		springJoint2.anchor = new Vector3 (0, 0, 0);
 		springJoint2.connectedAnchor = new Vector3 (0, 0, 0);
-		springJoint2.spring = 34500;
+		springJoint2.spring = 50000;
 		springJoint2.minDistance = 0.0f;
 		springJoint2.maxDistance = 0.0f;
 		springJoint2.tolerance = 0.025f;
@@ -328,6 +338,12 @@ public class OxygenScript : MonoBehaviour
 	void addObjForce (Vector3 force)
 	{
 		this.objForce += force;
+	}
+	
+	//Set max sqart of velocity
+	void setMaxVelocity (float maxVelocity)
+	{
+		this.sqrMaxVelocity = Mathf.Pow (maxVelocity, 2);
 	}
 
 	//Set position to temp object
