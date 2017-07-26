@@ -13,7 +13,7 @@ public class GameController : MonoBehaviour
 	//another Text that show on Sence
 	public Text nameText, moentumText, forceText, tempText, positionText;
 	// private number of argon atoms
-	private int numberArgon = 10;
+	private int numberArgon = 100;
 
 	//model of molecule that use to cloning
 	public OxygenScript OxygenPerfab;
@@ -35,27 +35,27 @@ public class GameController : MonoBehaviour
 	void Start ()
 	{
 
-		for (int i = 0; i < numberWater; i++) {
-			float randomPosX = Random.Range (-4.8f, 4.8f);
-			float randomPosY = Random.Range (-4.8f, 4.8f);
-			float randomPosZ = Random.Range (-4.8f, 4.8f);
-			oxygens.Add (Instantiate (OxygenPerfab, new Vector3 (randomPosX, randomPosY, randomPosZ), Quaternion.identity));
-		}
-
-		foreach (OxygenScript oxygen in oxygens) {
-			oxygen.transform.SetParent (this.transform);
-		}
-			
-//		for (int i = 0; i < numberArgon; i++) {
+//		for (int i = 0; i < numberWater; i++) {
 //			float randomPosX = Random.Range (-4.8f, 4.8f);
 //			float randomPosY = Random.Range (-4.8f, 4.8f);
 //			float randomPosZ = Random.Range (-4.8f, 4.8f);
-//			argons.Add (Instantiate (argonPerfab, new Vector3 (randomPosX, randomPosY, randomPosZ), Quaternion.identity));
+//			oxygens.Add (Instantiate (OxygenPerfab, new Vector3 (randomPosX, randomPosY, randomPosZ), Quaternion.identity));
 //		}
-//		
-//		foreach (ArgonScript argon in argons) {
-//			argon.transform.SetParent (this.transform);
+//
+//		foreach (OxygenScript oxygen in oxygens) {
+//			oxygen.transform.SetParent (this.transform);
 //		}
+			
+		for (int i = 0; i < numberArgon; i++) {
+			float randomPosX = Random.Range (-4.8f, 4.8f);
+			float randomPosY = Random.Range (-4.8f, 4.8f);
+			float randomPosZ = Random.Range (-4.8f, 4.8f);
+			argons.Add (Instantiate (argonPerfab, new Vector3 (randomPosX, randomPosY, randomPosZ), Quaternion.identity));
+		}
+		
+		foreach (ArgonScript argon in argons) {
+			argon.transform.SetParent (this.transform);
+		}
 
 	}
 
@@ -69,6 +69,7 @@ public class GameController : MonoBehaviour
 			tempText.text = "Temperature " + argonFocus.T + " Kelvins"; 
 			positionText.text = "Position  x : " + argonFocus.objPosition.x.ToString ("F3") + " y : " + argonFocus.objPosition.y.ToString ("F3") + " z : " + argonFocus.objPosition.z.ToString ("F3");
 		}
+
 	}
 
 	//Get number of Argon molecule
